@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="ToDoList.Views.EditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"  
+             xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.NET45" 
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:local="clr-namespace:ToDoList.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="BlanchedAlmond"
+             >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="12*"/>
+            <ColumnDefinition Width="41*"/>
+            <ColumnDefinition Width="348*"/>
+            <ColumnDefinition Width="41*"/>
+            <ColumnDefinition Width="107*"/>
+            <ColumnDefinition Width="21*"/>
+            <ColumnDefinition Width="174*"/>
+            <ColumnDefinition Width="56*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="323*"/>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="24*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="24*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True" Grid.ColumnSpan="8">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding DueDate, StringFormat={}{0:yyyy/MM/dd HH:mm}}" Header="期日"/>
+                <DataGridTextColumn Binding="{Binding StatusCode.Name}" Header="状況"/>
+                <DataGridTextColumn Binding="{Binding Subject}" Header="内容"/>
+            </DataGrid.Columns>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="CurrentCellChanged">
+                    <rp:EventToReactiveCommand Command="{Binding DataGridCurrentCellChanged, Mode=OneWay}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                </Style>
+            </DataGrid.RowStyle>
+
+        </DataGrid>
+        <Label Content="単語" Grid.Column="1"/>
+        <TextBox x:Name="SearchConditionsText" Text="{Binding SearchConditionsText.Value, Mode=TwoWay}" Grid.Column="2" TextWrapping="Wrap"/>
+        <Label Content="日付" Grid.Column="3"/>
+        <DatePicker x:Name="SearchConditionsTextDueDateFrom" SelectedDate="{Binding SearchConditionsTextDueDateFrom.Value, Mode=TwoWay}" Grid.Column="4"/>
+        <Label Content="～" Grid.Column="5"/>
+        <DatePicker x:Name="SearchConditionsTextDueDateTo" SelectedDate="{Binding SearchConditionsTextDueDateTo.Value, Mode=TwoWay}" Grid.Column="6"/>
+        <Button Content="検索" Command="{Binding SearchCommand}" Grid.Column="7"/>
+        <Label Content="期日" Grid.Row="4" Grid.Column="1"/>
+        <DatePicker x:Name="DueDate" SelectedDate="{Binding DueDate.Value, Mode=TwoWay}" Grid.Row="4" Grid.Column="2" Width="150" HorizontalAlignment="Left"/>
+        <Label Content="状況" Grid.Row="4" Grid.Column="3"/>
+        <Label Content="内容" Grid.Row="6" Grid.Column="1"/>
+        <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Column="4" Grid.Row="4" Grid.ColumnSpan="4"/>
+        <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" Grid.Row="6" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="6"/>
+
+    </Grid>
+</UserControl>

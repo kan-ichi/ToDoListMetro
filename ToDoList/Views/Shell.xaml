@@ -1,0 +1,46 @@
+﻿<metro:MetroWindow x:Class="ToDoList.Views.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"  
+        xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.NET45" 
+        xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:local="clr-namespace:ToDoList.Views"
+        xmlns:prism="http://prismlibrary.com/"
+        xmlns:ViewModels="clr-namespace:ToDoList.ViewModels"
+        mc:Ignorable="d"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        d:DataContext="{d:DesignInstance Type=ViewModels:ShellViewModel, IsDesignTimeCreatable=True}"
+        Title="Shell"
+        Width="800" Height="450"
+        >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <ListBox Grid.Column="0"
+                 ItemsSource="{Binding ListBoxItemsSource}"
+                 SelectedItem="{Binding ListBoxSelectedItem.Value, Mode=TwoWay}"
+                 SelectedIndex="0">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" Margin="2" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <rp:EventToReactiveCommand Command="{Binding ListBoxSelectionChanged, Mode=OneWay}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListBox>
+        
+        <Border Grid.Column="1"
+                Margin="10">
+            <ContentControl prism:RegionManager.RegionName="MainRegion" />
+        </Border>
+
+    </Grid>
+</metro:MetroWindow>
