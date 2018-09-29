@@ -50,8 +50,13 @@ namespace ToDoList.ViewModels
         {
             this.DataBaseManager.CreateDataBase();
             List<TodoTask> tasks = new List<TodoTask>();
-            tasks.Add(new TodoTask() { Subject = "Task ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "naiyou2", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "get up early ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "make breakfast ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "take my dog for a walk ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "make lunch ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "pick up my child from a nursery school ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "cook dinner ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "sleep early ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
             foreach (var task in tasks) this.DataBaseManager.TodoTaskInsert(task);
         }
 
