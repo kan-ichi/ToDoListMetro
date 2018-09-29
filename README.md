@@ -3,7 +3,7 @@ Windows PC stand-alone で動作する ToDoList のサンプルアプリケー�
 
 # Dependency
 Prism.Wpf ReactiveProperty MahApps.Metro SQLite を使用し、MVVMパターンの学習用として作成しています。
-under development
+(under development
 
 # Setup
 # Usage
