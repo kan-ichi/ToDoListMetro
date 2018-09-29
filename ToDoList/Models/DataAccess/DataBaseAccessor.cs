@@ -230,7 +230,7 @@ namespace ToDoList.Models.DataAccess
         /// </summary>
         private string GenerateId()
         {
-            string datePart = DateTime.Now.ToString("yyyyMMddHHMMss");
+            string datePart = DateTime.Now.ToString("yyyyMMddHHmmssff");
             string guidPart = Guid.NewGuid().ToString("N");
             return datePart + guidPart;
         }
