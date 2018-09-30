@@ -17,6 +17,7 @@ namespace ToDoList.ViewModels
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
         public ReactiveCommand ClearCommand { get; private set; }
         public ReactiveCommand UpdateCommand { get; private set; }
+        public ReactiveCommand RegisterCommand { get; private set; }
         public ReactiveCommand DeleteCommand { get; private set; }
         public ReactiveCollection<TodoTask> DataGridItemsSource { get; private set; }
         public ReactiveProperty<string> SearchConditionsText { get; private set; }
@@ -79,18 +80,19 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void UpdateCommandExecute()
         {
-            this.editingTodoTask.DueDate = this.DueDate.Value;
-            if (this.Status.Value)
-            {
-                this.editingTodoTask.StatusCode.Code = StatusCode.FINISHED;
-            }
-            else
-            {
-                this.editingTodoTask.StatusCode.Code = StatusCode.NOT_YET;
-            }
-            this.editingTodoTask.Subject = this.Subject.Value;
-
+            this.CollectEditControls(ref this.editingTodoTask);
             this.dbAccessor.TodoTaskUpdate(this.editingTodoTask);
+            this.SearchCommandExecute();
+        }
+
+        /// <summary>
+        /// ボタン〔新規〕押下処理
+        /// </summary>
+        private void RegisterCommandExecute()
+        {
+            this.editingTodoTask = new TodoTask();
+            this.CollectEditControls(ref this.editingTodoTask);
+            this.dbAccessor.TodoTaskInsert(this.editingTodoTask);
             this.SearchCommandExecute();
         }
 
@@ -121,6 +123,24 @@ namespace ToDoList.ViewModels
         }
 
         /// <summary>
+        /// 画面項目を引数で指定された変数にセットします
+        /// </summary>
+        private void CollectEditControls(ref TodoTask _task)
+        {
+            _task.DueDate = this.DueDate.Value;
+            if (this.Status.Value)
+            {
+                _task.StatusCode = new StatusCode(StatusCode.FINISHED);
+            }
+            else
+            {
+
+                _task.StatusCode = new StatusCode(StatusCode.NOT_YET);
+            }
+            _task.Subject = this.Subject.Value;
+        }
+
+        /// <summary>
         /// ビューにバインドされている項目を初期化します
         /// </summary>
         private void InitializeBindings()
@@ -133,6 +153,9 @@ namespace ToDoList.ViewModels
 
             this.UpdateCommand = new ReactiveCommand();
             this.UpdateCommand.Subscribe(x => UpdateCommandExecute());
+
+            this.RegisterCommand = new ReactiveCommand();
+            this.RegisterCommand.Subscribe(x => RegisterCommandExecute());
 
             this.DeleteCommand = new ReactiveCommand();
             this.DeleteCommand.Subscribe(x => DeleteCommandExecute());
