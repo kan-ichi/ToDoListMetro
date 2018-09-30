@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ToDoList.Models.Codes;
 using ToDoList.Models.DataAccess;
 using ToDoList.Models.Entities;
 
@@ -15,6 +16,7 @@ namespace ToDoList.ViewModels
         public ReactiveCommand SearchCommand { get; private set; }
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
         public ReactiveCommand ClearCommand { get; private set; }
+        public ReactiveCommand RegisterCommand { get; private set; }
         public ReactiveCollection<TodoTask> DataGridItemsSource { get; private set; }
         public ReactiveProperty<string> SearchConditionsText { get; private set; }
         public ReactiveProperty<DateTime?> SearchConditionsTextDueDateFrom { get; private set; }
@@ -45,7 +47,7 @@ namespace ToDoList.ViewModels
             sc.DueDateTo = this.SearchConditionsTextDueDateTo.Value;
 
             SqlBuilder sql = new SqlBuilder(sc);
-            List<TodoTask> tasks = dbAccessor.TodoTaskSelect(sql);
+            List<TodoTask> tasks = this.dbAccessor.TodoTaskSelect(sql);
 
             this.DataGridItemsSource.Clear();
             foreach (var task in tasks) this.DataGridItemsSource.Add(task);
@@ -78,6 +80,26 @@ namespace ToDoList.ViewModels
         }
 
         /// <summary>
+        /// ボタン〔登録〕押下処理
+        /// </summary>
+        private void RegisterCommandExecute()
+        {
+            this.editingTodoTask.DueDate = this.DueDate.Value;
+            if (this.Status.Value)
+            {
+                this.editingTodoTask.StatusCode.Code = StatusCode.FINISHED;
+            }
+            else
+            {
+                this.editingTodoTask.StatusCode.Code = StatusCode.NOT_YET;
+            }
+            this.editingTodoTask.Subject = this.Subject.Value;
+
+            this.dbAccessor.TodoTaskUpdate(this.editingTodoTask);
+            this.SearchCommandExecute();
+        }
+
+        /// <summary>
         /// ビューにバインドされている項目を初期化します
         /// </summary>
         private void InitializeBindings()
@@ -87,6 +109,9 @@ namespace ToDoList.ViewModels
 
             this.ClearCommand = new ReactiveCommand();
             this.ClearCommand.Subscribe(x => ClearCommandExecute());
+
+            this.RegisterCommand = new ReactiveCommand();
+            this.RegisterCommand.Subscribe(x => RegisterCommandExecute());
 
             this.DataGridCurrentCellChanged = new ReactiveCommand();
             this.DataGridCurrentCellChanged.Subscribe(x => DataGridCurrentCellChangedExecute());

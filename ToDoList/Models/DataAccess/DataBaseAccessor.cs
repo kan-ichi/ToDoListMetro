@@ -173,7 +173,7 @@ namespace ToDoList.Models.DataAccess
                     command.Parameters.Add(new SQLiteParameter("@updated_at", _record.UpdatedAt));
                     command.Parameters.Add(new SQLiteParameter("@subject", _record.Subject));
                     command.Parameters.Add(new SQLiteParameter("@due_date", _record.DueDate));
-                    command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode));
+                    command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode.Code));
 
                     //パラメータをセット
                     command.Prepare();
