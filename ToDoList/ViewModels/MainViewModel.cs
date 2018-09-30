@@ -17,14 +17,14 @@ namespace ToDoList.ViewModels
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
         #endregion
 
-        private DataBaseAccessor dbAccessor;
+        private DataBaseAccessor _dbAccessor_;
 
         public MainViewModel()
         {
             this.InitializeBindings();
 
-            this.dbAccessor = new DataBaseAccessor();
-            if (!this.dbAccessor.IsExistDataBaseFile()) this.GenerateDataBase();
+            _dbAccessor_ = new DataBaseAccessor();
+            if (!_dbAccessor_.IsExistDataBaseFile()) this.GenerateDataBase();
 
             this.ReadDatabaseAndShow();
         }
@@ -40,7 +40,7 @@ namespace ToDoList.ViewModels
             sc.StatusCodeNotEqual = StatusCode.FINISHED;
 
             SqlBuilder sql = new SqlBuilder(sc);
-            List<TodoTask> tasks = dbAccessor.TodoTaskSelect(sql);
+            List<TodoTask> tasks = _dbAccessor_.TodoTaskSelect(sql);
 
             this.DataGridItemsSource.Clear();
             foreach (var task in tasks) this.DataGridItemsSource.Add(task);
@@ -62,16 +62,16 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void GenerateDataBase()
         {
-            this.dbAccessor.CreateDataBase();
+            _dbAccessor_.CreateDataBase();
             List<TodoTask> tasks = new List<TodoTask>();
-            tasks.Add(new TodoTask() { Subject = "get up early ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "make breakfast ", DueDate = DateTime.Now.AddHours(4), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "take my dog for a walk ", DueDate = DateTime.Now.AddHours(8), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "make lunch ", DueDate = DateTime.Now.AddHours(12), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "pick up my child from a nursery school ", DueDate = DateTime.Now.AddHours(16), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "cook dinner ", DueDate = DateTime.Now.AddHours(20), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "sleep early ", DueDate = DateTime.Now.AddHours(24), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            foreach (var task in tasks) this.dbAccessor.TodoTaskInsert(task);
+            tasks.Add(new TodoTask() { Subject = "get up early", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "make breakfast", DueDate = DateTime.Now.AddHours(4), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "take my dog for a walk", DueDate = DateTime.Now.AddHours(8), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "make lunch", DueDate = DateTime.Now.AddHours(12), StatusCode = new StatusCode(StatusCode.FINISHED) });
+            tasks.Add(new TodoTask() { Subject = "pick up my child from a nursery school", DueDate = DateTime.Now.AddHours(16), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "cook dinner", DueDate = DateTime.Now.AddHours(20), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "sleep early", DueDate = DateTime.Now.AddHours(24), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            foreach (var task in tasks) _dbAccessor_.TodoTaskInsert(task);
         }
 
     }

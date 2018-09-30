@@ -28,14 +28,14 @@ namespace ToDoList.ViewModels
         public ReactiveProperty<string> Subject { get; private set; }
         #endregion
 
-        private DataBaseAccessor dbAccessor;
-        private TodoTask editingTodoTask;
+        private DataBaseAccessor _dbAccessor_;
+        private TodoTask _editingTodoTask_;
 
         public EditViewModel()
         {
             this.InitializeBindings();
 
-            this.dbAccessor = new DataBaseAccessor();
+            _dbAccessor_ = new DataBaseAccessor();
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace ToDoList.ViewModels
             sc.DueDateTo = this.SearchConditionsTextDueDateTo.Value;
 
             SqlBuilder sql = new SqlBuilder(sc);
-            List<TodoTask> tasks = this.dbAccessor.TodoTaskSelect(sql);
+            List<TodoTask> tasks = _dbAccessor_.TodoTaskSelect(sql);
 
             this.DataGridItemsSource.Clear();
             foreach (var task in tasks) this.DataGridItemsSource.Add(task);
@@ -70,9 +70,9 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void DataGridCurrentCellChangedExecute()
         {
-            this.editingTodoTask = null;
-            foreach (var task in this.DataGridItemsSource) if (task.IsSelected) this.editingTodoTask = task;
-            this.DisplayEditControls(this.editingTodoTask);
+            _editingTodoTask_ = null;
+            foreach (var task in this.DataGridItemsSource) if (task.IsSelected) _editingTodoTask_ = task;
+            this.DisplayEditControls(_editingTodoTask_);
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void UpdateCommandExecute()
         {
-            this.CollectEditControls(ref this.editingTodoTask);
-            this.dbAccessor.TodoTaskUpdate(this.editingTodoTask);
+            this.CollectEditControls(ref _editingTodoTask_);
+            _dbAccessor_.TodoTaskUpdate(_editingTodoTask_);
             this.SearchCommandExecute();
         }
 
@@ -90,9 +90,9 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void RegisterCommandExecute()
         {
-            this.editingTodoTask = new TodoTask();
-            this.CollectEditControls(ref this.editingTodoTask);
-            this.dbAccessor.TodoTaskInsert(this.editingTodoTask);
+            _editingTodoTask_ = new TodoTask();
+            this.CollectEditControls(ref _editingTodoTask_);
+            _dbAccessor_.TodoTaskInsert(_editingTodoTask_);
             this.SearchCommandExecute();
         }
 
@@ -101,9 +101,10 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void DeleteCommandExecute()
         {
-            this.dbAccessor.TodoTaskDelete(this.editingTodoTask);
+            _dbAccessor_.TodoTaskDelete(_editingTodoTask_);
             this.SearchCommandExecute();
-            this.DisplayEditControls(null);
+            _editingTodoTask_ = null;
+            this.DisplayEditControls(_editingTodoTask_);
         }
 
         /// <summary>
@@ -116,9 +117,9 @@ namespace ToDoList.ViewModels
             this.Subject.Value = string.Empty;
             if (_task != null)
             {
-                this.DueDate.Value = this.editingTodoTask.DueDate;
-                this.Status.Value = this.editingTodoTask.StatusCode.IsFinished;
-                this.Subject.Value = this.editingTodoTask.Subject;
+                this.DueDate.Value = _task.DueDate;
+                this.Status.Value = _task.StatusCode.IsFinished;
+                this.Subject.Value = _task.Subject;
             }
         }
 
