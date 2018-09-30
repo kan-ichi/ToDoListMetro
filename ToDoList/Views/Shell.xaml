@@ -12,7 +12,7 @@
         mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
         d:DataContext="{d:DesignInstance Type=ViewModels:ShellViewModel, IsDesignTimeCreatable=True}"
-        Title="Shell"
+        Title="ToDoList"
         Width="800" Height="450"
         >
     <Grid>

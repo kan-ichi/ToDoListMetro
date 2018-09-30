@@ -49,8 +49,8 @@ namespace ToDoList.ViewModels
         {
             return new List<ScreenItem>
             {
-                new ScreenItem { Name = "メイン  ", Type = typeof(MainView) },
-                new ScreenItem { Name = "編集  ", Type = typeof(EditView) }
+                new ScreenItem { Name = "Main  ", Type = typeof(MainView) },
+                new ScreenItem { Name = "Edit  ", Type = typeof(EditView) }
             };
         }
 
