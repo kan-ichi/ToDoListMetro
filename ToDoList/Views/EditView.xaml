@@ -67,7 +67,7 @@
         <DatePicker x:Name="DueDate" SelectedDate="{Binding DueDate.Value, Mode=TwoWay}" Grid.Row="4" Grid.Column="2" Width="150" HorizontalAlignment="Left"/>
         <Label Content="状況" Grid.Row="4" Grid.Column="3"/>
         <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="5"/>
-        <Button Content="登録" Command="{Binding RegisterCommand}" Grid.Row="4" Grid.Column="8"/>
+        <Button Content="更新" Command="{Binding UpdateCommand}" Grid.Row="4" Grid.Column="8"/>
         <Label Content="内容" Grid.Row="6" Grid.Column="1"/>
         <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" Grid.Row="6" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="7"/>
 

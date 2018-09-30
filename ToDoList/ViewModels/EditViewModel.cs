@@ -16,7 +16,7 @@ namespace ToDoList.ViewModels
         public ReactiveCommand SearchCommand { get; private set; }
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
         public ReactiveCommand ClearCommand { get; private set; }
-        public ReactiveCommand RegisterCommand { get; private set; }
+        public ReactiveCommand UpdateCommand { get; private set; }
         public ReactiveCollection<TodoTask> DataGridItemsSource { get; private set; }
         public ReactiveProperty<string> SearchConditionsText { get; private set; }
         public ReactiveProperty<DateTime?> SearchConditionsTextDueDateFrom { get; private set; }
@@ -82,7 +82,7 @@ namespace ToDoList.ViewModels
         /// <summary>
         /// ボタン〔登録〕押下処理
         /// </summary>
-        private void RegisterCommandExecute()
+        private void UpdateCommandExecute()
         {
             this.editingTodoTask.DueDate = this.DueDate.Value;
             if (this.Status.Value)
@@ -110,8 +110,8 @@ namespace ToDoList.ViewModels
             this.ClearCommand = new ReactiveCommand();
             this.ClearCommand.Subscribe(x => ClearCommandExecute());
 
-            this.RegisterCommand = new ReactiveCommand();
-            this.RegisterCommand.Subscribe(x => RegisterCommandExecute());
+            this.UpdateCommand = new ReactiveCommand();
+            this.UpdateCommand.Subscribe(x => UpdateCommandExecute());
 
             this.DataGridCurrentCellChanged = new ReactiveCommand();
             this.DataGridCurrentCellChanged.Subscribe(x => DataGridCurrentCellChangedExecute());
