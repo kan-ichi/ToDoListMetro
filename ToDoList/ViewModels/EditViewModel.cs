@@ -1,6 +1,7 @@
 ﻿using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,10 @@ namespace ToDoList.ViewModels
         public ReactiveProperty<DateTime?> SearchConditionsTextDueDateFrom { get; private set; }
         public ReactiveProperty<DateTime?> SearchConditionsTextDueDateTo { get; private set; }
         public ReactiveProperty<DateTime?> DueDate { get; private set; }
+        public ReadOnlyCollection<string> DueDateHourItemsSource { get; private set; }
+        public ReadOnlyCollection<string> DueDateMinuteItemsSource { get; private set; }
+        public ReactiveProperty<string> DueDateHour { get; private set; }
+        public ReactiveProperty<string> DueDateMinute { get; private set; }
         public ReactiveProperty<bool> Status { get; private set; }
         public ReactiveProperty<string> Subject { get; private set; }
         #endregion
@@ -117,27 +122,47 @@ namespace ToDoList.ViewModels
             this.Subject.Value = string.Empty;
             if (_task != null)
             {
-                this.DueDate.Value = _task.DueDate;
+                if (_task.DueDate.HasValue)
+                {
+                    this.DueDate.Value = _task.DueDate.Value;
+                    this.DueDateHour.Value = _task.DueDate.Value.Hour.ToString("00");
+                    this.DueDateMinute.Value = _task.DueDate.Value.Minute.ToString("00");
+                }
+                else
+                {
+                    this.DueDate.Value = null;
+                    this.DueDateHour.Value = 0.ToString("00");
+                    this.DueDateMinute.Value = 0.ToString("00");
+                }
                 this.Status.Value = _task.StatusCode.IsFinished;
                 this.Subject.Value = _task.Subject;
             }
         }
 
         /// <summary>
-        /// 画面項目を引数で指定された変数にセットします
+        /// 画面項目を引数で指定されたオブジェクトにセットします
         /// </summary>
         private void CollectEditControls(ref TodoTask _task)
         {
-            _task.DueDate = this.DueDate.Value;
+            if (this.DueDate.Value.HasValue)
+            {
+                _task.DueDate = this.DueDate.Value.Value.Date.AddHours(Convert.ToInt32(this.DueDateHour.Value)).AddMinutes(Convert.ToInt32(this.DueDateMinute.Value));
+            }
+            else
+            {
+                _task.DueDate = null;
+
+            }
+
             if (this.Status.Value)
             {
                 _task.StatusCode = new StatusCode(StatusCode.FINISHED);
             }
             else
             {
-
                 _task.StatusCode = new StatusCode(StatusCode.NOT_YET);
             }
+
             _task.Subject = this.Subject.Value;
         }
 
@@ -170,6 +195,13 @@ namespace ToDoList.ViewModels
             this.SearchConditionsTextDueDateFrom = new ReactiveProperty<DateTime?>();
             this.SearchConditionsTextDueDateTo = new ReactiveProperty<DateTime?>();
             this.DueDate = new ReactiveProperty<DateTime?>();
+
+            // 良い初期化方法があるはず
+            this.DueDateHourItemsSource = new ReadOnlyCollection<string>(new List<string> { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23" });
+            this.DueDateMinuteItemsSource = new ReadOnlyCollection<string>(new List<string> { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" });
+
+            this.DueDateHour = new ReactiveProperty<string>();
+            this.DueDateMinute = new ReactiveProperty<string>();
             this.Status = new ReactiveProperty<bool>();
             this.Subject = new ReactiveProperty<string>();
         }
