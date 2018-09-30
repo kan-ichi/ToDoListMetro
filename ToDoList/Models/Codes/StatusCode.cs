@@ -20,7 +20,7 @@ namespace ToDoList.Models.Codes
         };
 
         public string Code { get; set; }
-        public string Name { get { if (CodeNamePair.Keys.Contains(Code)) return CodeNamePair[Code];  else return string.Empty; } }
+        public string Name { get { if (CodeNamePair.Keys.Contains(Code)) return CodeNamePair[Code]; else return string.Empty; } }
 
         public StatusCode(string _code)
         {

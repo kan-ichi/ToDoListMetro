@@ -45,13 +45,13 @@ namespace ToDoList.Models.DataAccess
                 }
                 if (_cond.DueDateFrom.HasValue)
                 {
-                    sb.Append(@" AND @due_date_from <= due_date ");
-                    this.Parameters.Add(new SQLiteParameter(@"@due_date_from", _cond.DueDateFrom));
+                    sb.Append(@" AND @due_date_from <= DATE(due_date) ");
+                    this.Parameters.Add(new SQLiteParameter(@"@due_date_from", _cond.DueDateFrom.Value.Date.ToString("yyyy-MM-dd")));
                 }
                 if (_cond.DueDateTo.HasValue)
                 {
-                    sb.Append(@" AND due_date <= @due_date_to ");
-                    this.Parameters.Add(new SQLiteParameter(@"@due_date_to", _cond.DueDateTo));
+                    sb.Append(@" AND DATE(due_date) <= @due_date_to ");
+                    this.Parameters.Add(new SQLiteParameter(@"@due_date_to", _cond.DueDateTo.Value.Date.ToString("yyyy-MM-dd")));
                 }
                 whereClause = sb.ToString();
             }
