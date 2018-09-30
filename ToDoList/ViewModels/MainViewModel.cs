@@ -12,26 +12,26 @@ namespace ToDoList.ViewModels
 {
     public class MainViewModel
     {
-        private DataBaseAccessor DataBaseManager;
-
+        #region view binding items
         public ReactiveCollection<TodoTask> DataGridItemsSource { get; private set; }
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
+        #endregion
+
+        private DataBaseAccessor dbAccessor;
 
         public MainViewModel()
         {
-            this.DataBaseManager = new DataBaseAccessor();
-            if (!this.DataBaseManager.IsExistDataBaseFile()) this.GenerateDataBase();
+            this.InitializeBindings();
 
-            this.DataGridItemsSource = new ReactiveCollection<TodoTask>();
+            this.dbAccessor = new DataBaseAccessor();
+            if (!this.dbAccessor.IsExistDataBaseFile()) this.GenerateDataBase();
+
             this.ReadDatabaseAndShow();
-
-            this.DataGridCurrentCellChanged = new ReactiveCommand();
-            this.DataGridCurrentCellChanged.Subscribe(x => DataGridCurrentCellChangedExecute());
         }
 
         private void DataGridCurrentCellChangedExecute()
         {
-            // 未実装
+            // under construction
         }
 
         private void ReadDatabaseAndShow()
@@ -40,24 +40,38 @@ namespace ToDoList.ViewModels
             sc.StatusCodeNotEqual = StatusCode.FINISHED;
 
             SqlBuilder sql = new SqlBuilder(sc);
-            List<TodoTask> tasks = DataBaseManager.TodoTaskSelect(sql);
+            List<TodoTask> tasks = dbAccessor.TodoTaskSelect(sql);
 
             this.DataGridItemsSource.Clear();
             foreach (var task in tasks) this.DataGridItemsSource.Add(task);
         }
 
+        /// <summary>
+        /// ビューにバインドされている項目を初期化します
+        /// </summary>
+        private void InitializeBindings()
+        {
+            this.DataGridItemsSource = new ReactiveCollection<TodoTask>();
+
+            this.DataGridCurrentCellChanged = new ReactiveCommand();
+            this.DataGridCurrentCellChanged.Subscribe(x => DataGridCurrentCellChangedExecute());
+        }
+
+        /// <summary>
+        /// データベースを作成し、サンプルデータを追加します
+        /// </summary>
         private void GenerateDataBase()
         {
-            this.DataBaseManager.CreateDataBase();
+            this.dbAccessor.CreateDataBase();
             List<TodoTask> tasks = new List<TodoTask>();
             tasks.Add(new TodoTask() { Subject = "get up early ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "make breakfast ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "take my dog for a walk ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "make lunch ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "pick up my child from a nursery school ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "cook dinner ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "sleep early ", DueDate = DateTime.Now, StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            foreach (var task in tasks) this.DataBaseManager.TodoTaskInsert(task);
+            tasks.Add(new TodoTask() { Subject = "make breakfast ", DueDate = DateTime.Now.AddHours(4), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "take my dog for a walk ", DueDate = DateTime.Now.AddHours(8), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "make lunch ", DueDate = DateTime.Now.AddHours(12), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "pick up my child from a nursery school ", DueDate = DateTime.Now.AddHours(16), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "cook dinner ", DueDate = DateTime.Now.AddHours(20), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "sleep early ", DueDate = DateTime.Now.AddHours(24), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            foreach (var task in tasks) this.dbAccessor.TodoTaskInsert(task);
         }
 
     }

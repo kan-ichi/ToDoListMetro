@@ -11,8 +11,7 @@ namespace ToDoList.ViewModels
 {
     class EditViewModel
     {
-        private DataBaseAccessor DataBaseManager;
-
+        #region view binding items
         public ReactiveCommand SearchCommand { get; private set; }
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
         public ReactiveCommand ClearCommand { get; private set; }
@@ -23,11 +22,48 @@ namespace ToDoList.ViewModels
         public ReactiveProperty<DateTime?> DueDate { get; private set; }
         public ReactiveProperty<bool> Status { get; private set; }
         public ReactiveProperty<string> Subject { get; private set; }
+        #endregion
+
+        private DataBaseAccessor dbAccessor;
 
         public EditViewModel()
         {
-            this.DataBaseManager = new DataBaseAccessor();
+            this.InitializeBindings();
 
+            this.dbAccessor = new DataBaseAccessor();
+        }
+
+        private void DataGridCurrentCellChangedExecute()
+        {
+            // under construction
+        }
+
+        private void SearchCommandExecute()
+        {
+            SqlBuilder.EditViewSearchConditions sc = new SqlBuilder.EditViewSearchConditions();
+            sc.Text = this.SearchConditionsText.Value;
+            sc.DueDateFrom = this.SearchConditionsTextDueDateFrom.Value;
+            sc.DueDateTo = this.SearchConditionsTextDueDateTo.Value;
+
+            SqlBuilder sql = new SqlBuilder(sc);
+            List<TodoTask> tasks = dbAccessor.TodoTaskSelect(sql);
+
+            this.DataGridItemsSource.Clear();
+            foreach (var task in tasks) this.DataGridItemsSource.Add(task);
+        }
+
+        private void ClearCommandExecute()
+        {
+            this.SearchConditionsText.Value = string.Empty;
+            this.SearchConditionsTextDueDateFrom.Value = null;
+            this.SearchConditionsTextDueDateTo.Value = null;
+        }
+
+        /// <summary>
+        /// ビューにバインドされている項目を初期化します
+        /// </summary>
+        private void InitializeBindings()
+        {
             this.SearchCommand = new ReactiveCommand();
             this.SearchCommand.Subscribe(x => SearchCommandExecute());
 
@@ -45,33 +81,6 @@ namespace ToDoList.ViewModels
             this.DueDate = new ReactiveProperty<DateTime?>();
             this.Status = new ReactiveProperty<bool>();
             this.Subject = new ReactiveProperty<string>();
-
-        }
-
-        private void DataGridCurrentCellChangedExecute()
-        {
-            // 未実装
-        }
-
-        private void SearchCommandExecute()
-        {
-            SqlBuilder.EditViewSearchConditions sc = new SqlBuilder.EditViewSearchConditions();
-            sc.Text = this.SearchConditionsText.Value;
-            sc.DueDateFrom = this.SearchConditionsTextDueDateFrom.Value;
-            sc.DueDateTo = this.SearchConditionsTextDueDateTo.Value;
-
-            SqlBuilder sql = new SqlBuilder(sc);
-            List<TodoTask> tasks = DataBaseManager.TodoTaskSelect(sql);
-
-            this.DataGridItemsSource.Clear();
-            foreach (var task in tasks) this.DataGridItemsSource.Add(task);
-        }
-
-        private void ClearCommandExecute()
-        {
-            this.SearchConditionsText.Value = string.Empty;
-            this.SearchConditionsTextDueDateFrom.Value = null;
-            this.SearchConditionsTextDueDateTo.Value = null;
         }
     }
 }
