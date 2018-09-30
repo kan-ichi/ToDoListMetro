@@ -42,7 +42,7 @@ namespace ToDoList.ViewModels
         {
             var selected = this.ListBoxSelectedItem.Value;
             var selectedScreenType = selected.Type.Name;
-            this.RegionManager.RequestNavigate("MainRegion", selectedScreenType);
+            this.RegionManager.RequestNavigate("MainRegion", selectedScreenType, new NavigationParameters("ScreenId = " + selectedScreenType));
         }
 
         private List<ScreenItem> CreateScreenItemList()

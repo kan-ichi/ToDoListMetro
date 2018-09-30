@@ -1,4 +1,5 @@
-﻿using Reactive.Bindings;
+﻿using Prism.Regions;
+using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,43 @@ using ToDoList.Models.Entities;
 
 namespace ToDoList.ViewModels
 {
-    public class MainViewModel
+    public class MainViewModel: INavigationAware
     {
         #region view binding items
         public ReactiveCollection<TodoTask> DataGridItemsSource { get; private set; }
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
         #endregion
 
+        public string ScreenId { get; private set; }
+
         private DataBaseAccessor _dbAccessor_;
 
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            // Edit画面で編集した結果の再読み込みが上手く行っていない
+            this.ScreenId = navigationContext.Parameters["ScreenId"] as string;
+            this.InitializeViewModel();
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            return this.ScreenId == navigationContext.Parameters["ScreenId"] as string;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            // nothing to do
+        }
+
         public MainViewModel()
+        {
+            this.InitializeViewModel();
+        }
+
+        /// <summary>
+        /// 画面の初期表示を行います
+        /// </summary>
+        private void InitializeViewModel()
         {
             this.InitializeBindings();
 
@@ -28,6 +56,7 @@ namespace ToDoList.ViewModels
 
             this.ReadDatabaseAndShow();
         }
+
 
         private void DataGridCurrentCellChangedExecute()
         {
@@ -73,6 +102,5 @@ namespace ToDoList.ViewModels
             tasks.Add(new TodoTask() { Subject = "sleep early", DueDate = DateTime.Now.AddHours(24), StatusCode = new StatusCode(StatusCode.NOT_YET) });
             foreach (var task in tasks) _dbAccessor_.TodoTaskInsert(task);
         }
-
     }
 }
