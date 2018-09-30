@@ -20,7 +20,7 @@ namespace ToDoList.Models.DataAccess
         public SqlBuilder(MainViewSearchConditions _cond)
         {
             this.Parameters = new List<SQLiteParameter>();
-            this.CommandText = @"SELECT * FROM todo_task WHERE status_code <> @status_code ORDER BY due_date, updated_at";
+            this.CommandText = @"SELECT * FROM todo_task WHERE status_code <> @status_code ORDER BY due_date, created_at";
             this.Parameters.Add(new SQLiteParameter(@"@status_code", _cond.StatusCodeNotEqual));
         }
 
@@ -56,7 +56,7 @@ namespace ToDoList.Models.DataAccess
                 whereClause = sb.ToString();
             }
 
-            this.CommandText = @"SELECT * FROM todo_task" + whereClause + @" ORDER BY due_date, updated_at";
+            this.CommandText = @"SELECT * FROM todo_task" + whereClause + @" ORDER BY due_date, created_at";
 
         }
     }
