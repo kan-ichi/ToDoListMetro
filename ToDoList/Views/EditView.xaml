@@ -29,6 +29,7 @@
             <ColumnDefinition Width="60*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
             <RowDefinition Height="26*" />
             <RowDefinition Height="1*" />
             <RowDefinition Height="300*"/>
@@ -39,7 +40,7 @@
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
-        <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True" Grid.ColumnSpan="13">
+        <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True" Grid.ColumnSpan="13">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding DueDate, StringFormat={}{0:yyyy/MM/dd HH:mm}}" Header="期日"/>
                 <DataGridTextColumn Binding="{Binding StatusCode.Name}" Header="状況"/>
@@ -58,26 +59,26 @@
             </DataGrid.RowStyle>
         </DataGrid>
 
-        <Label Content="単語" Grid.Column="1"/>
-        <TextBox x:Name="SearchConditionsText" Text="{Binding SearchConditionsText.Value, Mode=TwoWay}" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="4"/>
-        <Label Content="期日" Grid.Column="6"/>
-        <DatePicker x:Name="SearchConditionsTextDueDateFrom" SelectedDate="{Binding SearchConditionsTextDueDateFrom.Value, Mode=TwoWay}" Grid.Column="7"/>
-        <Label Content="～" Grid.Column="8"/>
-        <DatePicker x:Name="SearchConditionsTextDueDateTo" SelectedDate="{Binding SearchConditionsTextDueDateTo.Value, Mode=TwoWay}" Grid.Column="9" Grid.ColumnSpan="2"/>
-        <Button Content="検索" Command="{Binding SearchCommand}" Grid.Column="11"/>
-        <Button Content="クリア" Command="{Binding ClearCommand}" Grid.Column="12"/>
+        <Label Content="単語" Grid.Row="1" Grid.Column="1"/>
+        <TextBox x:Name="SearchConditionsText" Text="{Binding SearchConditionsText.Value, Mode=TwoWay}" Grid.Row="1" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="4"/>
+        <Label Content="期日" Grid.Row="1" Grid.Column="6"/>
+        <DatePicker x:Name="SearchConditionsTextDueDateFrom" SelectedDate="{Binding SearchConditionsTextDueDateFrom.Value, Mode=TwoWay}" Grid.Row="1" Grid.Column="7"/>
+        <Label Content="～" Grid.Row="1" Grid.Column="8"/>
+        <DatePicker x:Name="SearchConditionsTextDueDateTo" SelectedDate="{Binding SearchConditionsTextDueDateTo.Value, Mode=TwoWay}" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="2"/>
+        <Button Content="検索" Command="{Binding SearchCommand}" Grid.Row="1" Grid.Column="11"/>
+        <Button Content="クリア" Command="{Binding ClearCommand}" Grid.Row="1" Grid.Column="12"/>
 
-        <Label Content="期日" Grid.Row="4" Grid.Column="1"/>
-        <DatePicker x:Name="DueDate" SelectedDate="{Binding DueDate.Value, Mode=TwoWay}" Grid.Row="4" Grid.Column="2"/>
-        <ComboBox x:Name="DueDateHour" ItemsSource="{Binding DueDateHourItemsSource}" SelectedValue="{Binding DueDateHour.Value, Mode=TwoWay}" Grid.Row="4" Grid.Column="3"/>
-        <ComboBox x:Name="DueDateMinute" ItemsSource="{Binding DueDateMinuteItemsSource}" SelectedValue="{Binding DueDateMinute.Value, Mode=TwoWay}" Grid.Row="4" Grid.Column="4"/>
-        <Label Content="状況" Grid.Row="4" Grid.Column="6"/>
-        <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Row="4" Grid.Column="7" Grid.ColumnSpan="6"/>
-        <Button Content="更新" Command="{Binding UpdateCommand}" Grid.Row="4" Grid.Column="10"/>
-        <Button Content="新規" Command="{Binding RegisterCommand}" Grid.Row="4" Grid.Column="11"/>
-        <Button Content="削除" Command="{Binding DeleteCommand}" Grid.Row="4" Grid.Column="12"/>
-        <Label Content="内容" Grid.Row="6" Grid.Column="1"/>
-        <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" Grid.Row="6" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="11"/>
+        <Label Content="期日" Grid.Row="5" Grid.Column="1"/>
+        <DatePicker x:Name="DueDate" SelectedDate="{Binding DueDate.Value, Mode=TwoWay}" Grid.Row="5" Grid.Column="2"/>
+        <ComboBox x:Name="DueDateHour" ItemsSource="{Binding DueDateHourItemsSource}" SelectedValue="{Binding DueDateHour.Value, Mode=TwoWay}" Grid.Row="5" Grid.Column="3"/>
+        <ComboBox x:Name="DueDateMinute" ItemsSource="{Binding DueDateMinuteItemsSource}" SelectedValue="{Binding DueDateMinute.Value, Mode=TwoWay}" Grid.Row="5" Grid.Column="4"/>
+        <Label Content="状況" Grid.Row="5" Grid.Column="6"/>
+        <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Row="5" Grid.Column="7" Grid.ColumnSpan="6"/>
+        <Button Content="更新" Command="{Binding UpdateCommand}" Grid.Row="5" Grid.Column="10"/>
+        <Button Content="新規" Command="{Binding RegisterCommand}" Grid.Row="5" Grid.Column="11"/>
+        <Button Content="削除" Command="{Binding DeleteCommand}" Grid.Row="5" Grid.Column="12"/>
+        <Label Content="内容" Grid.Row="7" Grid.Column="1"/>
+        <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" Grid.Row="7" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="11"/>
 
     </Grid>
 </UserControl>
