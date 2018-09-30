@@ -14,27 +14,28 @@
              >
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="12*"/>
-            <ColumnDefinition Width="41*"/>
-            <ColumnDefinition Width="348*"/>
-            <ColumnDefinition Width="41*"/>
-            <ColumnDefinition Width="107*"/>
-            <ColumnDefinition Width="21*"/>
-            <ColumnDefinition Width="174*"/>
-            <ColumnDefinition Width="56*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="300*"/>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="60*"/>
+            <ColumnDefinition Width="60*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="24*" />
+            <RowDefinition Height="26*" />
             <RowDefinition Height="1*" />
-            <RowDefinition Height="323*"/>
+            <RowDefinition Height="300*"/>
             <RowDefinition Height="1*" />
-            <RowDefinition Height="24*" />
+            <RowDefinition Height="26*" />
             <RowDefinition Height="1*" />
-            <RowDefinition Height="24*" />
+            <RowDefinition Height="26*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
-        <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True" Grid.ColumnSpan="8">
+        <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True" Grid.ColumnSpan="9">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding DueDate, StringFormat={}{0:yyyy/MM/dd HH:mm}}" Header="期日"/>
                 <DataGridTextColumn Binding="{Binding StatusCode.Name}" Header="状況"/>
@@ -51,21 +52,23 @@
                     <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                 </Style>
             </DataGrid.RowStyle>
-
         </DataGrid>
+
         <Label Content="単語" Grid.Column="1"/>
         <TextBox x:Name="SearchConditionsText" Text="{Binding SearchConditionsText.Value, Mode=TwoWay}" Grid.Column="2" TextWrapping="Wrap"/>
-        <Label Content="日付" Grid.Column="3"/>
+        <Label Content="期日" Grid.Column="3"/>
         <DatePicker x:Name="SearchConditionsTextDueDateFrom" SelectedDate="{Binding SearchConditionsTextDueDateFrom.Value, Mode=TwoWay}" Grid.Column="4"/>
         <Label Content="～" Grid.Column="5"/>
         <DatePicker x:Name="SearchConditionsTextDueDateTo" SelectedDate="{Binding SearchConditionsTextDueDateTo.Value, Mode=TwoWay}" Grid.Column="6"/>
         <Button Content="検索" Command="{Binding SearchCommand}" Grid.Column="7"/>
+        <Button Content="クリア" Command="{Binding ClearCommand}" Grid.Column="8"/>
+        
         <Label Content="期日" Grid.Row="4" Grid.Column="1"/>
         <DatePicker x:Name="DueDate" SelectedDate="{Binding DueDate.Value, Mode=TwoWay}" Grid.Row="4" Grid.Column="2" Width="150" HorizontalAlignment="Left"/>
         <Label Content="状況" Grid.Row="4" Grid.Column="3"/>
+        <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="5"/>
         <Label Content="内容" Grid.Row="6" Grid.Column="1"/>
-        <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Column="4" Grid.Row="4" Grid.ColumnSpan="4"/>
-        <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" Grid.Row="6" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="6"/>
+        <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" Grid.Row="6" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="7"/>
 
     </Grid>
 </UserControl>
