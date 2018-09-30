@@ -26,5 +26,8 @@ namespace ToDoList.Models.Codes
         {
             this.Code = _code;
         }
+
+        public bool IsNotYet { get { return NOT_YET.Equals(this.Code); } }
+        public bool IsFinished { get { return FINISHED.Equals(this.Code); } }
     }
 }

@@ -25,6 +25,7 @@ namespace ToDoList.ViewModels
         #endregion
 
         private DataBaseAccessor dbAccessor;
+        private TodoTask editingTodoTask;
 
         public EditViewModel()
         {
@@ -33,11 +34,9 @@ namespace ToDoList.ViewModels
             this.dbAccessor = new DataBaseAccessor();
         }
 
-        private void DataGridCurrentCellChangedExecute()
-        {
-            // under construction
-        }
-
+        /// <summary>
+        /// ボタン〔検索〕押下処理
+        /// </summary>
         private void SearchCommandExecute()
         {
             SqlBuilder.EditViewSearchConditions sc = new SqlBuilder.EditViewSearchConditions();
@@ -52,11 +51,30 @@ namespace ToDoList.ViewModels
             foreach (var task in tasks) this.DataGridItemsSource.Add(task);
         }
 
+        /// <summary>
+        /// ボタン〔クリア〕押下処理
+        /// </summary>
         private void ClearCommandExecute()
         {
             this.SearchConditionsText.Value = string.Empty;
             this.SearchConditionsTextDueDateFrom.Value = null;
             this.SearchConditionsTextDueDateTo.Value = null;
+        }
+
+        /// <summary>
+        /// データグリッドの行選択時処理
+        /// </summary>
+        private void DataGridCurrentCellChangedExecute()
+        {
+            this.editingTodoTask = null;
+            foreach (var task in this.DataGridItemsSource) if (task.IsSelected) this.editingTodoTask = task;
+
+            if (this.editingTodoTask != null)
+            {
+                this.DueDate.Value = this.editingTodoTask.DueDate;
+                this.Status.Value = this.editingTodoTask.StatusCode.IsFinished;
+                this.Subject.Value = this.editingTodoTask.Subject;
+            }
         }
 
         /// <summary>
