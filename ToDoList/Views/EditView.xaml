@@ -14,33 +14,34 @@
              >
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="40*"/>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="40*"/>
-            <ColumnDefinition Width="40*"/>
-            <ColumnDefinition Width="120*"/>
-            <ColumnDefinition Width="40*"/>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="20*"/>
-            <ColumnDefinition Width="40*"/>
-            <ColumnDefinition Width="60*"/>
-            <ColumnDefinition Width="60*"/>
-            <ColumnDefinition Width="60*"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="4"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="26*" />
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="300*"/>
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="26*" />
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="26*" />
-            <RowDefinition Height="1*" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="2" />
+            <RowDefinition Height="26" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="26" />
+            <RowDefinition Height="2" />
         </Grid.RowDefinitions>
 
-        <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True" Grid.ColumnSpan="13">
+        <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True" Grid.ColumnSpan="14">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding DueDate, StringFormat={}{0:yyyy/MM/dd HH:mm}}" Header="期日"/>
                 <DataGridTextColumn Binding="{Binding StatusCode.Name}" Header="状況"/>
@@ -73,7 +74,7 @@
         <ComboBox x:Name="DueDateHour" ItemsSource="{Binding DueDateHourItemsSource}" SelectedValue="{Binding DueDateHour.Value, Mode=TwoWay}" Grid.Row="5" Grid.Column="3"/>
         <ComboBox x:Name="DueDateMinute" ItemsSource="{Binding DueDateMinuteItemsSource}" SelectedValue="{Binding DueDateMinute.Value, Mode=TwoWay}" Grid.Row="5" Grid.Column="4"/>
         <Label Content="状況" Grid.Row="5" Grid.Column="6"/>
-        <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Row="5" Grid.Column="7" Grid.ColumnSpan="6"/>
+        <CheckBox x:Name="Status" IsChecked="{Binding Status.Value, Mode=TwoWay}" Content="完了" Grid.Row="5" Grid.Column="7" Grid.ColumnSpan="7"/>
         <Button Content="更新" Command="{Binding UpdateCommand}" Grid.Row="5" Grid.Column="10"/>
         <Button Content="新規" Command="{Binding RegisterCommand}" Grid.Row="5" Grid.Column="11"/>
         <Button Content="削除" Command="{Binding DeleteCommand}" Grid.Row="5" Grid.Column="12"/>
