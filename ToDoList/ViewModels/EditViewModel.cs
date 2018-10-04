@@ -171,24 +171,6 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void InitializeBindings()
         {
-            this.SearchCommand = new ReactiveCommand();
-            this.SearchCommand.Subscribe(x => SearchCommandExecute());
-
-            this.ClearCommand = new ReactiveCommand();
-            this.ClearCommand.Subscribe(x => ClearCommandExecute());
-
-            this.UpdateCommand = new ReactiveCommand();
-            this.UpdateCommand.Subscribe(x => UpdateCommandExecute());
-
-            this.RegisterCommand = new ReactiveCommand();
-            this.RegisterCommand.Subscribe(x => RegisterCommandExecute());
-
-            this.DeleteCommand = new ReactiveCommand();
-            this.DeleteCommand.Subscribe(x => DeleteCommandExecute());
-
-            this.DataGridCurrentCellChanged = new ReactiveCommand();
-            this.DataGridCurrentCellChanged.Subscribe(x => DataGridCurrentCellChangedExecute());
-
             this.DataGridItemsSource = new ReactiveCollection<TodoTask>();
 
             this.SearchConditionsText = new ReactiveProperty<string>();
@@ -204,6 +186,24 @@ namespace ToDoList.ViewModels
             this.DueDateMinute = new ReactiveProperty<string>();
             this.Status = new ReactiveProperty<bool>();
             this.Subject = new ReactiveProperty<string>();
+
+            this.DataGridCurrentCellChanged = new ReactiveCommand();
+            this.DataGridCurrentCellChanged.Subscribe(x => DataGridCurrentCellChangedExecute());
+
+            this.SearchCommand = new ReactiveCommand();
+            this.SearchCommand.Subscribe(x => SearchCommandExecute());
+
+            this.ClearCommand = new ReactiveCommand();
+            this.ClearCommand.Subscribe(x => ClearCommandExecute());
+
+            this.UpdateCommand = new ReactiveCommand();
+            this.UpdateCommand.Subscribe(x => UpdateCommandExecute());
+
+            this.RegisterCommand = new ReactiveCommand();
+            this.RegisterCommand.Subscribe(x => RegisterCommandExecute());
+
+            this.DeleteCommand = new ReactiveCommand();
+            this.DeleteCommand.Subscribe(x => DeleteCommandExecute());
         }
     }
 }
