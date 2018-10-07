@@ -4,6 +4,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ToDoList.Models.Codes;
 
 namespace ToDoList.Models.DataAccess
 {
@@ -57,7 +58,41 @@ namespace ToDoList.Models.DataAccess
             }
 
             this.CommandText = @"SELECT * FROM todo_task" + whereClause + @" ORDER BY due_date, created_at";
+        }
 
+        public struct FileViewExportSearchConditions
+        {
+            public bool ExportStatusExceptFinished { get; set; }
+            public DateTime? ExportDueDateFrom { get; set; }
+            public DateTime? ExportDueDateTo { get; set; }
+        }
+
+        public SqlBuilder(FileViewExportSearchConditions _cond)
+        {
+            this.Parameters = new List<SQLiteParameter>();
+            string whereClause;
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(@" WHERE 1 = 1 ");
+                if (_cond.ExportStatusExceptFinished)
+                {
+                    sb.Append(@" AND status_code <> @status_code ");
+                    this.Parameters.Add(new SQLiteParameter(@"@status_code", StatusCode.FINISHED));
+                }
+                if (_cond.ExportDueDateFrom.HasValue)
+                {
+                    sb.Append(@" AND @due_date_from <= DATE(due_date) ");
+                    this.Parameters.Add(new SQLiteParameter(@"@due_date_from", _cond.ExportDueDateFrom.Value.Date.ToString("yyyy-MM-dd")));
+                }
+                if (_cond.ExportDueDateTo.HasValue)
+                {
+                    sb.Append(@" AND DATE(due_date) <= @due_date_to ");
+                    this.Parameters.Add(new SQLiteParameter(@"@due_date_to", _cond.ExportDueDateTo.Value.Date.ToString("yyyy-MM-dd")));
+                }
+                whereClause = sb.ToString();
+            }
+
+            this.CommandText = @"SELECT * FROM todo_task" + whereClause + @" ORDER BY due_date, created_at";
         }
     }
 }
