@@ -40,7 +40,6 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void ExportCommandExecute()
         {
-            // under construction
             string exportPathAndFileName = this.ExportPathAndFileName.Value;
 
             SqlBuilder.FileViewExportSearchConditions sc = new SqlBuilder.FileViewExportSearchConditions();
@@ -51,8 +50,9 @@ namespace ToDoList.ViewModels
             SqlBuilder sql = new SqlBuilder(sc);
             List<TodoTask> tasks = _dbAccessor_.TodoTaskSelect(sql);
 
-            XlsxWriter writer = new XlsxWriter();
-            writer.WriteTest(exportPathAndFileName);
+            XlsxWriter.FileViewExport(exportPathAndFileName, tasks);
+
+            this.ExportPathAndFileName.Value = string.Empty;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace ToDoList.ViewModels
         {
             // under construction
              string importPathAndFileName = this.ImportPathAndFileName.Value;
-       }
+        }
 
         /// <summary>
         /// ボタン〔バックアップ〕押下処理
