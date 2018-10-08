@@ -1,6 +1,9 @@
-﻿using Reactive.Bindings;
+﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
@@ -26,12 +29,13 @@ namespace ToDoList.ViewModels
         public ReactiveCommand RestoreCommand { get; private set; }
         #endregion
 
+        public MetroWindow MainWindow { get; private set; }
         private DataBaseAccessor _dbAccessor_;
 
         public FileViewModel()
         {
             this.InitializeBindings();
-
+            this.MainWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
             _dbAccessor_ = new DataBaseAccessor();
         }
 
@@ -53,6 +57,7 @@ namespace ToDoList.ViewModels
             XlsxWriter.FileViewExport(exportPathAndFileName, tasks);
 
             this.ExportPathAndFileName.Value = string.Empty;
+            this.MainWindow.ShowMessageAsync("ファイルのエクスポート", Path.GetFileName(exportPathAndFileName) + " にデータを出力しました");
         }
 
         /// <summary>
