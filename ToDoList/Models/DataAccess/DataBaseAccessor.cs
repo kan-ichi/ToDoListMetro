@@ -60,6 +60,84 @@ namespace ToDoList.Models.DataAccess
         }
 
         /// <summary>
+        /// データベースに存在するテーブルの一覧を取得します
+        /// </summary>
+        public List<string> GetTableNameList()
+        {
+            List<string> ret = new List<string>();
+            using (var connection = new SQLiteConnection(_connectionString_))
+            using (var command = connection.CreateCommand())
+            {
+                connection.Open();
+                command.CommandText = @"SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name";
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read() == true)
+                    {
+                        ret.Add(reader["name"].ToString());
+                    }
+                }
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// テーブル内の全てのレコードを取得します（一行目にカラム名を付与して取得）
+        /// </summary>
+        public List<List<object>> SelectAllWithHeader(string _tableName)
+        {
+            return this.SelectAll(_tableName, true);
+        }
+
+        /// <summary>
+        /// テーブル内の全てのレコードを取得します
+        /// </summary>
+        public List<List<object>> SelectAll(string _tableName, bool _withHeader)
+        {
+            List<List<object>> recordList = new List<List<object>>();
+
+            if (_withHeader)
+            {
+                using (var connection = new SQLiteConnection(_connectionString_))
+                using (var command = connection.CreateCommand())
+                {
+                    connection.Open();
+                    command.CommandText = @"PRAGMA TABLE_INFO(" + _tableName + ")";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        List<object> columnArray = new List<object>();
+                        while (reader.Read() == true)
+                        {
+                            columnArray.Add(reader["name"].ToString());
+                        }
+                        recordList.Add(columnArray);
+                    }
+                }
+            }
+
+            using (var connection = new SQLiteConnection(_connectionString_))
+            using (var command = connection.CreateCommand())
+            {
+                connection.Open();
+                command.CommandText = @"SELECT * FROM " + _tableName;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read() == true)
+                    {
+                        List<object> columnArray = new List<object>();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            columnArray.Add(reader.GetValue(i));
+                        }
+                        recordList.Add(columnArray);
+                    }
+                }
+            }
+
+            return recordList;
+        }
+
+        /// <summary>
         /// タスクテーブルからレコードを取得します
         /// </summary>
         public List<TodoTask> TodoTaskSelect(SqlBuilder _sql)

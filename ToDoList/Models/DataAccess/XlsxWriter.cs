@@ -41,5 +41,35 @@ namespace ToDoList.Models.DataAccess
 
             book.SaveAs(_fileName);
         }
+
+        /// <summary>
+        /// FileView ボタン〔バックアップ〕のデータ出力を行います
+        /// </summary>
+        public static void FileViewBackup(string _fileName, Dictionary<string, List<List<object>>> _tables)
+        {
+            var book = new XLWorkbook();
+
+            foreach (var table in _tables)
+            {
+                var sheet = book.Worksheets.Add(table.Key);
+                int rowNum = 1;
+
+                List<List<object>> records = table.Value;
+                foreach (List<object> record in records)
+                {
+                    int colNum = 1;
+
+                    foreach (var column in record)
+                    {
+                        sheet.Cell(rowNum, colNum).SetValue<string>(column.ToString());
+                        colNum++;
+                    }
+
+                    rowNum++;
+                }
+            }
+
+            book.SaveAs(_fileName);
+        }
     }
 }

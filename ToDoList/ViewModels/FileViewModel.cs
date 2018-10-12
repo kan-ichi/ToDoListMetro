@@ -44,8 +44,6 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void ExportCommandExecute()
         {
-            string exportPathAndFileName = this.ExportPathAndFileName.Value;
-
             SqlBuilder.FileViewExportSearchConditions sc = new SqlBuilder.FileViewExportSearchConditions();
             sc.ExportStatusExceptFinished = this.ExportStatusExceptFinished.Value;
             sc.ExportDueDateFrom = this.ExportDueDateFrom.Value;
@@ -54,10 +52,11 @@ namespace ToDoList.ViewModels
             SqlBuilder sql = new SqlBuilder(sc);
             List<TodoTask> tasks = _dbAccessor_.TodoTaskSelect(sql);
 
+            string exportPathAndFileName = this.ExportPathAndFileName.Value;
             XlsxWriter.FileViewExport(exportPathAndFileName, tasks);
 
-            this.ExportPathAndFileName.Value = string.Empty;
             this.MainWindow.ShowMessageAsync("ファイルのエクスポート", Path.GetFileName(exportPathAndFileName) + " にデータを出力しました");
+            this.ExportPathAndFileName.Value = string.Empty;
         }
 
         /// <summary>
@@ -74,8 +73,18 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void BackupCommandExecute()
         {
-            // under construction
-             string backupPathAndFileName = this.BackupPathAndFileName.Value;
+            Dictionary<string, List<List<object>>> backupTables = new Dictionary<string, List<List<object>>>();
+            foreach(var tableName in _dbAccessor_.GetTableNameList())
+            {
+                List<List<object>> recordList = _dbAccessor_.SelectAllWithHeader(tableName);
+                backupTables.Add(tableName, recordList);
+            }
+
+            string backupPathAndFileName = this.BackupPathAndFileName.Value;
+            XlsxWriter.FileViewBackup(backupPathAndFileName, backupTables);
+
+            this.MainWindow.ShowMessageAsync("ファイルのバックアップ", Path.GetFileName(backupPathAndFileName) + " にデータを出力しました");
+            this.BackupPathAndFileName.Value = string.Empty;
         }
 
         /// <summary>
