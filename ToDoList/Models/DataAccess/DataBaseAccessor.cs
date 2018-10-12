@@ -14,9 +14,9 @@ namespace ToDoList.Models.DataAccess
     /// </summary>
     public class DataBaseAccessor
     {
-        private static readonly string FileName = @"ToDoList.db";
-        private readonly string ConnectionString = null;
-        private readonly string DataBaseFilePath = System.AppDomain.CurrentDomain.BaseDirectory + FileName;
+        public const string DB_FILENAME = @"ToDoList.db";
+        private readonly string _connectionString_ = null;
+        private readonly string _dbFilePath_ = System.AppDomain.CurrentDomain.BaseDirectory + DB_FILENAME;
 
         /// <summary>
         /// コンストラクタ
@@ -25,11 +25,10 @@ namespace ToDoList.Models.DataAccess
         {
             var builder = new SQLiteConnectionStringBuilder()
             {
-                DataSource = FileName,
+                DataSource = DB_FILENAME,
                 Version = 3
             };
-
-            ConnectionString = builder.ToString();
+            _connectionString_ = builder.ToString();
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace ToDoList.Models.DataAccess
         /// </summary>
         public bool IsExistDataBaseFile()
         {
-            return System.IO.File.Exists(DataBaseFilePath);
+            return System.IO.File.Exists(_dbFilePath_);
         }
 
         /// <summary>
@@ -45,10 +44,9 @@ namespace ToDoList.Models.DataAccess
         /// </summary>
         public void CreateDataBase()
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(_connectionString_))
             {
                 connection.Open();
-
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"CREATE TABLE todo_task(id TEXT PRIMARY KEY, created_at TEXT NOT NULL, updated_at TEXT NOT NULL" +
@@ -68,40 +66,32 @@ namespace ToDoList.Models.DataAccess
         {
             var records = new List<TodoTask>();
 
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(_connectionString_))
             using (var command = connection.CreateCommand())
             {
-                try
-                {
-                    connection.Open();
-                    command.CommandText = _sql.CommandText;
-                    command.Parameters.AddRange(_sql.Parameters.ToArray());
+                connection.Open();
+                command.CommandText = _sql.CommandText;
+                command.Parameters.AddRange(_sql.Parameters.ToArray());
 
-                    using (var reader = command.ExecuteReader())
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read() == true)
                     {
-                        while (reader.Read() == true)
+                        TodoTask record = new TodoTask()
                         {
-                            TodoTask record = new TodoTask()
-                            {
-                                ID = reader["id"].ToString(),
-                                CreatedAt = Convert.ToDateTime(reader["created_at"]),
-                                UpdatedAt = Convert.ToDateTime(reader["updated_at"])
-                            };
-                            record.Subject = reader["subject"].ToString();
-                            {
-                                DateTime d;
-                                if (DateTime.TryParse(reader["due_date"].ToString(), out d)) record.DueDate = d;
-                            }
-                            record.StatusCode = new StatusCode(reader["status_code"].ToString());
-
-                            records.Add(record);
+                            ID = reader["id"].ToString(),
+                            CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                            UpdatedAt = Convert.ToDateTime(reader["updated_at"])
+                        };
+                        record.Subject = reader["subject"].ToString();
+                        {
+                            DateTime d;
+                            if (DateTime.TryParse(reader["due_date"].ToString(), out d)) record.DueDate = d;
                         }
+                        record.StatusCode = new StatusCode(reader["status_code"].ToString());
+
+                        records.Add(record);
                     }
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception.Message);
-                    throw;
                 }
             }
             return records;
@@ -118,33 +108,24 @@ namespace ToDoList.Models.DataAccess
             _record.CreatedAt = now;
             _record.UpdatedAt = now;
 
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(_connectionString_))
             using (var command = connection.CreateCommand())
             {
-                try
-                {
-                    connection.Open();
+                connection.Open();
 
-                    command.CommandText = @"INSERT INTO todo_task " +
-                        @"( id,  created_at,  updated_at,  subject,  due_date,  status_code) VALUES " +
-                        @"(@id, @created_at, @updated_at, @subject, @due_date, @status_code)";
-                    command.Parameters.Add(new SQLiteParameter("@id", id));
-                    command.Parameters.Add(new SQLiteParameter("@created_at", _record.CreatedAt));
-                    command.Parameters.Add(new SQLiteParameter("@updated_at", _record.UpdatedAt));
-                    command.Parameters.Add(new SQLiteParameter("@subject", _record.Subject));
-                    command.Parameters.Add(new SQLiteParameter("@due_date", _record.DueDate));
-                    command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode.Code));
+                command.CommandText = @"INSERT INTO todo_task " +
+                    @"( id,  created_at,  updated_at,  subject,  due_date,  status_code) VALUES " +
+                    @"(@id, @created_at, @updated_at, @subject, @due_date, @status_code)";
 
-                    //パラメータをセット
-                    command.Prepare();
+                command.Parameters.Add(new SQLiteParameter("@id", id));
+                command.Parameters.Add(new SQLiteParameter("@created_at", _record.CreatedAt));
+                command.Parameters.Add(new SQLiteParameter("@updated_at", _record.UpdatedAt));
+                command.Parameters.Add(new SQLiteParameter("@subject", _record.Subject));
+                command.Parameters.Add(new SQLiteParameter("@due_date", _record.DueDate));
+                command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode.Code));
 
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception.Message);
-                    throw;
-                }
+                command.Prepare();  //パラメータをセット
+                command.ExecuteNonQuery();
             }
 
             _record.ID = id;
@@ -157,34 +138,24 @@ namespace ToDoList.Models.DataAccess
         {
             _record.UpdatedAt = DateTime.Now;
 
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(_connectionString_))
             using (var command = connection.CreateCommand())
             {
-                try
-                {
-                    connection.Open();
+                connection.Open();
+                command.CommandText = @"UPDATE todo_task SET updated_at = @updated_at" +
+                    @", subject      = @subject" +
+                    @", due_date     = @due_date" +
+                    @", status_code  = @status_code" +
+                    @" WHERE id = @id";
 
-                    command.CommandText = @"UPDATE todo_task SET updated_at = @updated_at" +
-                        @", subject      = @subject" +
-                        @", due_date     = @due_date" +
-                        @", status_code  = @status_code" +
-                        @" WHERE id = @id";
-                    command.Parameters.Add(new SQLiteParameter("@id", _record.ID));
-                    command.Parameters.Add(new SQLiteParameter("@updated_at", _record.UpdatedAt));
-                    command.Parameters.Add(new SQLiteParameter("@subject", _record.Subject));
-                    command.Parameters.Add(new SQLiteParameter("@due_date", _record.DueDate));
-                    command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode.Code));
+                command.Parameters.Add(new SQLiteParameter("@id", _record.ID));
+                command.Parameters.Add(new SQLiteParameter("@updated_at", _record.UpdatedAt));
+                command.Parameters.Add(new SQLiteParameter("@subject", _record.Subject));
+                command.Parameters.Add(new SQLiteParameter("@due_date", _record.DueDate));
+                command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode.Code));
 
-                    //パラメータをセット
-                    command.Prepare();
-
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception.Message);
-                    throw;
-                }
+                command.Prepare(); //パラメータをセット
+                command.ExecuteNonQuery();
             }
         }
 
@@ -201,27 +172,14 @@ namespace ToDoList.Models.DataAccess
         /// </summary>
         public void TodoTaskDelete(string _id)
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(_connectionString_))
             using (var command = connection.CreateCommand())
             {
-                try
-                {
-                    connection.Open();
-
-                    command.CommandText = @"DELETE FROM todo_task WHERE id = @id";
-
-                    command.Parameters.Add(new SQLiteParameter("@id", _id));
-
-                    //パラメータをセット
-                    command.Prepare();
-
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception.Message);
-                    throw;
-                }
+                connection.Open();
+                command.CommandText = @"DELETE FROM todo_task WHERE id = @id";
+                command.Parameters.Add(new SQLiteParameter("@id", _id));
+                command.Prepare();
+                command.ExecuteNonQuery();
             }
         }
 
