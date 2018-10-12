@@ -3,7 +3,7 @@ Windows PC stand-alone で動作する ToDoList のサンプルアプリケー�
 MVVMパターンの学習用として作成しています。(under development)
 
 # Dependency
-Prism.Wpf ReactiveProperty MahApps.Metro SQLite を使用しています。
+Prism.Wpf ReactiveProperty MahApps.Metro SQLite ClosedXML を使用しています。
 
 # Usage
 ToDoListMetro.sln を Visual Studio 2015 Community で開き、ビルド後にデバッグ実行します。
