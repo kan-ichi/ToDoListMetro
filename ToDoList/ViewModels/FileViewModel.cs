@@ -90,10 +90,131 @@ namespace ToDoList.ViewModels
         /// <summary>
         /// ボタン〔データ復旧〕押下処理
         /// </summary>
-        private void RestoreCommandExecute()
+        private async void RestoreCommandExecute()
         {
+            string restorePathAndFileName = this.RestorePathAndFileName.Value;
+
+            var metroDialogSettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "はい",
+                NegativeButtonText = "いいえ",
+                AnimateHide = true,
+                AnimateShow = true,
+                ColorScheme = MetroDialogColorScheme.Theme,
+            };
+
+            var diagResult = await this.MainWindow.ShowMessageAsync("データ復旧の確認", "現在のデータを全て消去し、バックアップファイル " + Path.GetFileName(restorePathAndFileName) + " で上書きしますがよろしいですか？", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
+            if (diagResult != MessageDialogResult.Affirmative) return;
+
+            Dictionary<string, List<List<object>>> restoreSheets = XlsxReader.GetXLSheets(restorePathAndFileName);
+
+            var checkRestoreSheetsResult = this.CheckRestoreSheets(restoreSheets);
+            if(checkRestoreSheetsResult.Count > 0)
+            {
+                await this.MainWindow.ShowMessageAsync("データ復旧処理を中止しました", "バックアップファイルの形式が正しくありません");
+                return;
+            }
+
             // under construction
-             string restorePathAndFileName = this.RestorePathAndFileName.Value;
+
+            this.RestorePathAndFileName.Value = string.Empty;
+        }
+
+        /// <summary>
+        /// 復旧用データのチェックを行います
+        /// </summary>
+        private List<CheckRestoreSheetsResult> CheckRestoreSheets(Dictionary<string, List<List<object>>> _restoreSheets)
+        {
+            List<CheckRestoreSheetsResult> ret = new List<CheckRestoreSheetsResult>();
+
+            // 復旧用データに存在するべきシート名
+            List<string> properSheetNames = new List<string>()
+            {
+                "todo_task"
+            };
+
+            // 復旧用データ todo_task に存在するべき列名
+            List<string> properColumnNamesOfTodoTask = new List<string>()
+            {
+                "id",
+                "created_at",
+                "updated_at",
+                "subject",
+                "due_date",
+                "status_code"
+            };
+
+            // 復旧用データに存在するシート名をチェック
+            {
+                List<string> restoreSheetNames = new List<string>();
+                foreach (var restoreSheet in _restoreSheets) restoreSheetNames.Add(restoreSheet.Key);
+
+                if (this.IsMatched(properSheetNames, restoreSheetNames) == false)
+                {
+                    ret.Add(CheckRestoreSheetsResult.SHEET_NAMES_INVALID);
+                    return ret;
+                }
+            }
+
+            // 復旧用データ todo_task のチェック
+            List<List<object>> sheet = _restoreSheets["todo_task"];
+
+            // シートにデータが存在すること
+            if (sheet.Count == 0)
+            {
+                ret.Add(CheckRestoreSheetsResult.SHEET_TODO_TASK_ROW_NOT_FOUND);
+            }
+            else
+            {
+                List<string> restoreColumnNames = new List<string>();
+                foreach (var firstColumn in sheet[0]) restoreColumnNames.Add(firstColumn.ToString());
+
+                // シートの列の過不足をチェック
+                if (this.IsMatched(properColumnNamesOfTodoTask, restoreColumnNames) == false)
+                {
+                    ret.Add(CheckRestoreSheetsResult.SHEET_TODO_TASK_COLUMN_INVALID);
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 復旧用データのチェック結果
+        /// </summary>
+        private enum CheckRestoreSheetsResult
+        {
+            /// <summary>
+            /// シート名が不正
+            /// </summary>
+            SHEET_NAMES_INVALID,
+
+            /// <summary>
+            /// todo_task シートに行が存在しない
+            /// </summary>
+            SHEET_TODO_TASK_ROW_NOT_FOUND,
+
+            /// <summary>
+            /// todo_task シートの列に過不足がある
+            /// </summary>
+            SHEET_TODO_TASK_COLUMN_INVALID
+        }
+
+        /// <summary>
+        /// 引数リスト同士が一致しているかを判定します
+        /// </summary>
+        private bool IsMatched(List<string> _firstList, List<string> _secondList)
+        {
+            bool unMatched = false;
+            foreach(var first in _firstList)
+            {
+                if (_secondList.Contains(first) == false) unMatched = true; 
+            }
+            foreach(var second in _secondList)
+            {
+                if (_firstList.Contains(second) == false) unMatched = true; 
+            }
+            return !(unMatched);
         }
 
         /// <summary>
