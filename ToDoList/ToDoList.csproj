@@ -168,6 +168,8 @@
     </Compile>
     <Compile Include="Models\DataAccess\XlsxReader.cs" />
     <Compile Include="Models\DataAccess\XlsxWriter.cs" />
+    <Compile Include="Models\Utilities\UtilLib.cs" />
+    <Compile Include="Models\Validators\FileViewRestoreValidator.cs" />
     <Compile Include="ViewModels\EditViewModel.cs" />
     <Compile Include="ViewModels\FileViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
