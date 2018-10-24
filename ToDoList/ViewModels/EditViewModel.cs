@@ -1,4 +1,5 @@
-﻿using Reactive.Bindings;
+﻿using Prism.Regions;
+using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,9 +12,10 @@ using ToDoList.Models.Entities;
 
 namespace ToDoList.ViewModels
 {
-    class EditViewModel
+    class EditViewModel : INavigationAware
     {
         #region view binding items
+
         public ReactiveCommand SearchCommand { get; private set; }
         public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
         public ReactiveCommand ClearCommand { get; private set; }
@@ -31,7 +33,37 @@ namespace ToDoList.ViewModels
         public ReactiveProperty<string> DueDateMinute { get; private set; }
         public ReactiveProperty<bool> Status { get; private set; }
         public ReactiveProperty<string> Subject { get; private set; }
+
         #endregion
+
+        #region 画面遷移時の処理
+
+        public string ScreenId { get; private set; }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            this.ScreenId = navigationContext.Parameters["ScreenId"] as string;
+        }
+
+        /// <summary>
+        /// この画面に遷移して来たタイミングで処理を行います
+        /// </summary>
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            this.ClearSearchConditions();
+            this.DataGridItemsSource.Clear();
+            this.DisplayEditControls(null);
+            return this.ScreenId == navigationContext.Parameters["ScreenId"] as string;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            // nothing to do
+        }
+
+        #endregion
+
+        #region クラス内変数・コンストラクタ
 
         private DataBaseAccessor _dbAccessor_;
         private TodoTask _editingTodoTask_;
@@ -42,6 +74,10 @@ namespace ToDoList.ViewModels
 
             _dbAccessor_ = new DataBaseAccessor();
         }
+
+        #endregion
+
+        #region イベント処理
 
         /// <summary>
         /// ボタン〔検索〕押下処理
@@ -65,9 +101,7 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void ClearCommandExecute()
         {
-            this.SearchConditionsText.Value = string.Empty;
-            this.SearchConditionsTextDueDateFrom.Value = null;
-            this.SearchConditionsTextDueDateTo.Value = null;
+            this.ClearSearchConditions();
         }
 
         /// <summary>
@@ -112,14 +146,31 @@ namespace ToDoList.ViewModels
             this.DisplayEditControls(_editingTodoTask_);
         }
 
+        #endregion
+
+        #region 各種メソッド
+
+        /// <summary>
+        /// 画面の検索条件入力項目をクリアします
+        /// </summary>
+        private void ClearSearchConditions()
+        {
+            this.SearchConditionsText.Value = string.Empty;
+            this.SearchConditionsTextDueDateFrom.Value = null;
+            this.SearchConditionsTextDueDateTo.Value = null;
+        }
+
         /// <summary>
         /// 編集する項目を画面に表示します
         /// </summary>
         private void DisplayEditControls(TodoTask _task)
         {
             this.DueDate.Value = null;
+            this.DueDateHour.Value = 0.ToString("00");
+            this.DueDateMinute.Value = 0.ToString("00");
             this.Status.Value = false;
             this.Subject.Value = string.Empty;
+
             if (_task != null)
             {
                 if (_task.DueDate.HasValue)
@@ -127,12 +178,6 @@ namespace ToDoList.ViewModels
                     this.DueDate.Value = _task.DueDate.Value;
                     this.DueDateHour.Value = _task.DueDate.Value.Hour.ToString("00");
                     this.DueDateMinute.Value = _task.DueDate.Value.Minute.ToString("00");
-                }
-                else
-                {
-                    this.DueDate.Value = null;
-                    this.DueDateHour.Value = 0.ToString("00");
-                    this.DueDateMinute.Value = 0.ToString("00");
                 }
                 this.Status.Value = _task.StatusCode.IsFinished;
                 this.Subject.Value = _task.Subject;
@@ -205,5 +250,7 @@ namespace ToDoList.ViewModels
             this.DeleteCommand = new ReactiveCommand();
             this.DeleteCommand.Subscribe(x => DeleteCommandExecute());
         }
+
+        #endregion
     }
 }

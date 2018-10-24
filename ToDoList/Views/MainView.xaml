@@ -23,17 +23,20 @@
         </Grid.ColumnDefinitions>
 
         <DataGrid ItemsSource="{Binding DataGridItemsSource}" Grid.ColumnSpan="3" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single" IsReadOnly="True">
+            
             <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="完了" Command="{Binding Path=DataContext.FinishButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Binding="{Binding DueDate, StringFormat={}{0:yyyy/MM/dd HH:mm}}" Header="期日"/>
                 <DataGridTextColumn Binding="{Binding StatusCode.Name}" Header="状況"/>
                 <DataGridTextColumn Binding="{Binding Subject}" Header="内容"/>
             </DataGrid.Columns>
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="CurrentCellChanged">
-                    <rp:EventToReactiveCommand Command="{Binding DataGridCurrentCellChanged, Mode=OneWay}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            
+
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
                     <Setter Property="IsSelected" Value="{Binding IsSelected}" />

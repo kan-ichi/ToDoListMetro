@@ -11,26 +11,30 @@ using ToDoList.Models.Entities;
 
 namespace ToDoList.ViewModels
 {
-    public class MainViewModel: INavigationAware
+    public class MainViewModel : INavigationAware
     {
         #region view binding items
+
+        public ReactiveCommand FinishButtonCommand { get; private set; }
         public ReactiveCollection<TodoTask> DataGridItemsSource { get; private set; }
-        public ReactiveCommand DataGridCurrentCellChanged { get; private set; }
+
         #endregion
+
+        #region 画面遷移時の処理
 
         public string ScreenId { get; private set; }
 
-        private DataBaseAccessor _dbAccessor_;
-
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            // Edit画面で編集した結果の再読み込みが上手く行っていない
             this.ScreenId = navigationContext.Parameters["ScreenId"] as string;
-            this.InitializeViewModel();
         }
 
+        /// <summary>
+        /// この画面に遷移して来たタイミングで処理を行います
+        /// </summary>
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
+            this.SearchExecute();
             return this.ScreenId == navigationContext.Parameters["ScreenId"] as string;
         }
 
@@ -39,31 +43,47 @@ namespace ToDoList.ViewModels
             // nothing to do
         }
 
-        public MainViewModel()
-        {
-            this.InitializeViewModel();
-        }
+        #endregion
 
-        /// <summary>
-        /// 画面の初期表示を行います
-        /// </summary>
-        private void InitializeViewModel()
+        #region クラス内変数・コンストラクタ
+
+        private DataBaseAccessor _dbAccessor_;
+
+        public MainViewModel()
         {
             this.InitializeBindings();
 
             _dbAccessor_ = new DataBaseAccessor();
             if (!_dbAccessor_.IsExistDataBaseFile()) this.GenerateDataBase();
 
-            this.ReadDatabaseAndShow();
+            this.SearchExecute();
         }
 
+        #endregion
 
-        private void DataGridCurrentCellChangedExecute()
+        #region イベント処理
+
+        /// <summary>
+        /// ボタン〔完了〕押下処理
+        /// </summary>
+        private void FinishButtonCommandExecute()
         {
-            // under construction
+            TodoTask clickedTask = null;
+            foreach (var task in this.DataGridItemsSource) if (task.IsSelected) clickedTask = task;
+
+            clickedTask.StatusCode = new StatusCode(StatusCode.FINISHED);
+            _dbAccessor_.TodoTaskUpdate(clickedTask);
+            this.SearchExecute();
         }
 
-        private void ReadDatabaseAndShow()
+        #endregion
+
+        #region 各種メソッド
+
+        /// <summary>
+        /// データグリッドに検索結果を表示します
+        /// </summary>
+        private void SearchExecute()
         {
             SqlBuilder.MainViewSearchConditions sc = new SqlBuilder.MainViewSearchConditions();
             sc.StatusCodeNotEqual = StatusCode.FINISHED;
@@ -82,8 +102,8 @@ namespace ToDoList.ViewModels
         {
             this.DataGridItemsSource = new ReactiveCollection<TodoTask>();
 
-            this.DataGridCurrentCellChanged = new ReactiveCommand();
-            this.DataGridCurrentCellChanged.Subscribe(x => DataGridCurrentCellChangedExecute());
+            this.FinishButtonCommand = new ReactiveCommand();
+            this.FinishButtonCommand.Subscribe(x => FinishButtonCommandExecute());
         }
 
         /// <summary>
@@ -102,5 +122,7 @@ namespace ToDoList.ViewModels
             tasks.Add(new TodoTask() { Subject = "sleep early", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(24).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.NOT_YET) });
             foreach (var task in tasks) _dbAccessor_.TodoTaskInsert(task);
         }
+
+        #endregion
     }
 }
