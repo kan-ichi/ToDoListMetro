@@ -202,7 +202,7 @@ namespace ToDoList.Models.DataAccess
                 command.Parameters.Add(new SQLiteParameter("@due_date", _record.DueDate));
                 command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode.Code));
 
-                command.Prepare();  //パラメータをセット
+                command.Prepare(); //パラメータをセット
                 command.ExecuteNonQuery();
             }
 
