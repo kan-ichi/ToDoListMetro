@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.NET45"
         xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:ToDoList.Views"
@@ -12,6 +13,7 @@
         mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
         d:DataContext="{d:DesignInstance Type=ViewModels:ShellViewModel, IsDesignTimeCreatable=True}"
+        TitleCaps="False"
         Title="ToDoList"
         Width="800" Height="500"
         >
