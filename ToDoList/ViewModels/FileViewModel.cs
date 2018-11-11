@@ -3,13 +3,16 @@ using MahApps.Metro.Controls.Dialogs;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ToDoList.Models.Codes;
 using ToDoList.Models.DataAccess;
 using ToDoList.Models.Entities;
+using ToDoList.Models.Utilities;
 using ToDoList.Models.Validators;
 
 namespace ToDoList.ViewModels
@@ -30,6 +33,8 @@ namespace ToDoList.ViewModels
         public ReactiveCommand RestoreCommand { get; private set; }
         #endregion
 
+        #region クラス内変数・コンストラクタ
+
         public MetroWindow MainWindow { get; private set; }
         private DataBaseAccessor _dbAccessor_;
 
@@ -39,6 +44,10 @@ namespace ToDoList.ViewModels
             this.MainWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
             _dbAccessor_ = new DataBaseAccessor();
         }
+
+        #endregion
+
+        #region イベント処理
 
         /// <summary>
         /// ボタン〔エクスポート〕押下処理
@@ -56,7 +65,7 @@ namespace ToDoList.ViewModels
             string exportPathAndFileName = this.ExportPathAndFileName.Value;
             XlsxWriter.FileViewExport(exportPathAndFileName, tasks);
 
-            this.MainWindow.ShowMessageAsync("ファイルのエクスポート", Path.GetFileName(exportPathAndFileName) + " にデータを出力しました");
+            this.MainWindow.ShowMessageAsync("ファイルのエクスポート", Path.GetFileName(exportPathAndFileName) + " にデータを出力しました。");
             this.ExportPathAndFileName.Value = string.Empty;
         }
 
@@ -84,7 +93,7 @@ namespace ToDoList.ViewModels
             string backupPathAndFileName = this.BackupPathAndFileName.Value;
             XlsxWriter.FileViewBackup(backupPathAndFileName, backupTables);
 
-            this.MainWindow.ShowMessageAsync("ファイルのバックアップ", Path.GetFileName(backupPathAndFileName) + " にデータを出力しました");
+            this.MainWindow.ShowMessageAsync("ファイルのバックアップ", Path.GetFileName(backupPathAndFileName) + " にデータを出力しました。");
             this.BackupPathAndFileName.Value = string.Empty;
         }
 
@@ -107,19 +116,66 @@ namespace ToDoList.ViewModels
             var diagResult = await this.MainWindow.ShowMessageAsync("データ復旧の確認", "現在のデータを全て消去し、バックアップファイル " + Path.GetFileName(restorePathAndFileName) + " で上書きしますがよろしいですか？", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
             if (diagResult != MessageDialogResult.Affirmative) return;
 
-            Dictionary<string, List<List<object>>> restoreSheets = XlsxReader.GetXLSheets(restorePathAndFileName);
+            DataSet restoreSheets = XlsxReader.GetXLSheets(restorePathAndFileName);
 
             var checkRestoreSheetsResult = FileViewRestoreValidator.CheckRestoreSheets(restoreSheets);
             if(checkRestoreSheetsResult.Count > 0)
             {
-                await this.MainWindow.ShowMessageAsync("データ復旧処理を中止しました", "バックアップファイルの形式が正しくありません");
+                await this.MainWindow.ShowMessageAsync("データ復旧処理を中止しました", "バックアップファイルの形式が正しくありません。");
                 return;
             }
 
-            // under construction
+            DataTable restoreTableTodoTask = UtilLib.ConvertTableFirstRowAsColumnName(restoreSheets.Tables["todo_task"]);
+            this.RestoreTableTodoTask(restoreTableTodoTask);
 
+            await this.MainWindow.ShowMessageAsync("データ復旧処理が完了しました", "バックアップファイル " + Path.GetFileName(restorePathAndFileName) + " からデータを復旧しました。");
             this.RestorePathAndFileName.Value = string.Empty;
         }
+
+        #endregion
+
+        #region 各種メソッド
+
+        /// <summary>
+        /// タスクテーブルのリストアを行います（現在のデータは復旧用データに全て置き換わります）
+        /// </summary>
+        private void RestoreTableTodoTask(DataTable _restoreTable)
+        {
+            DateTime currentDateTime = DateTime.Now;
+            string tempTableName = @"todo_task_temp_" + currentDateTime.ToString("yyyyMMddHHmmssfff");
+
+            // 一時テーブルを作成
+            {
+                string createTableQuery = _dbAccessor_.GenerateCreateTableQueryTodoTask(tempTableName);
+                _dbAccessor_.CreateTable(createTableQuery);
+            }
+
+            // 一時テーブルにレコードを登録
+            foreach (DataRow row in _restoreTable.Rows)
+            {
+                TodoTask record = new TodoTask()
+
+                #region レコード各項目の値を設定
+                {
+                    ID = row["id"].ToString(),
+                    CreatedAt = Convert.ToDateTime(row["created_at"]),
+                    UpdatedAt = Convert.ToDateTime(row["updated_at"])
+                };
+                record.Subject = row["subject"].ToString();
+                {
+                    DateTime d;
+                    if (DateTime.TryParse(row["due_date"].ToString(), out d)) record.DueDate = d;
+                }
+                record.StatusCode = new StatusCode(row["status_code"].ToString());
+                #endregion
+
+                _dbAccessor_.TodoTaskInsert(record, tempTableName);
+            }
+
+            // 一時テーブルをリネームし、タスクテーブルとする
+            _dbAccessor_.RenameTempTableToTodoTask(tempTableName);
+        }
+
 
         /// <summary>
         /// ビューにバインドされている項目を初期化します
@@ -150,5 +206,7 @@ namespace ToDoList.ViewModels
             this.RestoreCommand = RestorePathAndFileName.Select(x => !string.IsNullOrEmpty(x)).ToReactiveCommand();
             this.RestoreCommand.Subscribe(x => RestoreCommandExecute());
         }
+
+        #endregion
     }
 }

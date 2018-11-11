@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,18 +14,18 @@ namespace ToDoList.Models.DataAccess
         /// <summary>
         /// xlsx ファイルのデータを取得します
         /// </summary>
-        public static Dictionary<string, List<List<object>>> GetXLSheets(string _fileName)
+        public static DataSet GetXLSheets(string _fileName)
         {
             List<string> sheetNames = GetSheetNames(_fileName);
-            var sheets = new Dictionary<string, List<List<object>>>();
+            DataSet sheets = new DataSet();
 
             using (var xlBook = new XLWorkbook(_fileName))
             {
                 foreach(var sheetName in sheetNames)
                 {
                     IXLWorksheet xlSheet = xlBook.Worksheet(sheetName);
-                    List<List<object>> rowList = GetXLSheet(xlSheet);
-                    sheets.Add(sheetName, rowList);
+                    DataTable rowList = GetXLSheet(xlSheet);
+                    sheets.Tables.Add(rowList);
                 }
             }
 
@@ -36,7 +37,7 @@ namespace ToDoList.Models.DataAccess
         /// </summary>
         private static List<string> GetSheetNames(string _fileName)
         {
-            var sheetNames = new List<string>();
+            List<string> sheetNames = new List<string>();
 
             using (var xlBook = new XLWorkbook(_fileName))
             {
@@ -52,17 +53,22 @@ namespace ToDoList.Models.DataAccess
         /// <summary>
         /// xlsx シートのデータを取得します
         /// </summary>
-        private static List<List<object>> GetXLSheet(IXLWorksheet _xlSheet)
+        private static DataTable GetXLSheet(IXLWorksheet _xlSheet)
         {
-            var rowList = new List<List<object>>();
+            DataTable rowList = new DataTable(_xlSheet.Name);
 
             IXLTable xlTable = _xlSheet.RangeUsed().AsTable();
             int maxRowIndex = xlTable.DataRange.RowCount();
             int maxColIndex = xlTable.DataRange.ColumnCount();
 
-            for (int rowIndex = 1; rowIndex <= maxRowIndex; rowIndex++)
+            for (int colIndex = 1; colIndex <= maxColIndex; colIndex++)
             {
-                var row = new List<object>();
+                rowList.Columns.Add(new DataColumn());
+            }
+
+            for (int rowIndex = 1; rowIndex <= maxRowIndex + 1; rowIndex++)
+            {
+                var row = rowList.NewRow();
                 for (int colIndex = 1; colIndex <= maxColIndex; colIndex++)
                 {
                     IXLCell xlCell = _xlSheet.Cell(rowIndex, colIndex);
@@ -82,9 +88,9 @@ namespace ToDoList.Models.DataAccess
                             columnValue = _xlSheet.Cell(rowIndex, colIndex).GetString();
                             break;
                     }
-                    row.Add(columnValue);
+                    row[colIndex - 1] = columnValue;
                 }
-                rowList.Add(row);
+                rowList.Rows.Add(row);
             }
 
             return rowList;

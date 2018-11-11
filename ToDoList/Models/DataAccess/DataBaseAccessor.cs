@@ -44,16 +44,67 @@ namespace ToDoList.Models.DataAccess
         /// </summary>
         public void CreateDataBase()
         {
+            this.CreateTable(this.GenerateCreateTableQueryTodoTask());
+        }
+
+        /// <summary>
+        /// データベースにテーブルを作成します
+        /// </summary>
+        public void CreateTable(string _createTableQuery)
+        {
             using (var connection = new SQLiteConnection(_connectionString_))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = @"CREATE TABLE todo_task(id TEXT PRIMARY KEY, created_at TEXT NOT NULL, updated_at TEXT NOT NULL" +
-                        @", subject      TEXT" +
-                        @", due_date     TEXT" +
-                        @", status_code  TEXT NOT NULL" +
-                        @")";
+                    command.CommandText = _createTableQuery;
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        /// <summary>
+        /// タスクテーブルのCREATEクエリを生成します
+        /// </summary>
+        public string GenerateCreateTableQueryTodoTask()
+        {
+            return this.GenerateCreateTableQueryTodoTask(@"todo_task");
+        }
+
+        /// <summary>
+        /// タスクテーブルのCREATEクエリを生成します（テーブル名として任意の文字列を指定可能）
+        /// </summary>
+        public string GenerateCreateTableQueryTodoTask(string _tableName)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(@"CREATE TABLE ");
+            sb.Append(_tableName);
+            sb.Append(@"(id TEXT PRIMARY KEY, created_at TEXT NOT NULL, updated_at TEXT NOT NULL");
+            sb.Append(@", subject      TEXT");
+            sb.Append(@", due_date     TEXT");
+            sb.Append(@", status_code  TEXT NOT NULL");
+            sb.Append(@")");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 一時テーブルをリネームし、タスクテーブルとします（元のタスクテーブルは削除します）
+        /// </summary>
+        public void RenameTempTableToTodoTask(string _tempTableName)
+        {
+            DateTime currentDateTime = DateTime.Now;
+            string deleteTableName = @"todo_task_temp_del_" + currentDateTime.ToString("yyyyMMddHHmmssfff");
+
+            using (var connection = new SQLiteConnection(_connectionString_))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"ALTER TABLE todo_task RENAME TO " + deleteTableName;
+                    command.ExecuteNonQuery();
+                    command.CommandText = @"ALTER TABLE " + _tempTableName + @" RENAME TO todo_task";
+                    command.ExecuteNonQuery();
+                    command.CommandText = @"DROP TABLE " + deleteTableName;
                     command.ExecuteNonQuery();
                 }
             }
@@ -90,9 +141,9 @@ namespace ToDoList.Models.DataAccess
         }
 
         /// <summary>
-        /// テーブル内の全てのレコードを取得します
+        /// テーブル内の全てのレコードを取得します（引数で「ヘッダ有」を指定した場合、一行目にカラム名を付与して取得）
         /// </summary>
-        public List<List<object>> SelectAll(string _tableName, bool _withHeader)
+        private List<List<object>> SelectAll(string _tableName, bool _withHeader = false)
         {
             List<List<object>> recordList = new List<List<object>>();
 
@@ -178,7 +229,7 @@ namespace ToDoList.Models.DataAccess
         /// <summary>
         /// タスクテーブルにレコードを追加します
         /// </summary>
-        public void TodoTaskInsert(TodoTask _record)
+        public void TodoTaskInsert(TodoTask _record, string alias = "todo_task")
         {
             var id = this.GenerateId();
             var now = DateTime.Now;
@@ -191,7 +242,7 @@ namespace ToDoList.Models.DataAccess
             {
                 connection.Open();
 
-                command.CommandText = @"INSERT INTO todo_task " +
+                command.CommandText = @"INSERT INTO " + alias + @" " +
                     @"( id,  created_at,  updated_at,  subject,  due_date,  status_code) VALUES " +
                     @"(@id, @created_at, @updated_at, @subject, @due_date, @status_code)";
 

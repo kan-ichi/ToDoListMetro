@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace ToDoList.Models.Validators
         /// <summary>
         /// 復旧用データの検証を行います
         /// </summary>
-        public static List<CheckRestoreSheetsResult> CheckRestoreSheets(Dictionary<string, List<List<object>>> _restoreSheets)
+        public static List<CheckRestoreSheetsResult> CheckRestoreSheets(DataSet _restoreSheets)
         {
             List<CheckRestoreSheetsResult> ret = new List<CheckRestoreSheetsResult>();
 
@@ -60,7 +61,7 @@ namespace ToDoList.Models.Validators
             // 復旧用データに存在するシート名をチェック
             {
                 List<string> restoreSheetNames = new List<string>();
-                foreach (var restoreSheet in _restoreSheets) restoreSheetNames.Add(restoreSheet.Key);
+                foreach (DataTable restoreSheet in _restoreSheets.Tables) restoreSheetNames.Add(restoreSheet.TableName);
 
                 if (UtilLib.IsMatched(properSheetNames, restoreSheetNames) == false)
                 {
@@ -70,22 +71,24 @@ namespace ToDoList.Models.Validators
             }
 
             // 復旧用データ todo_task のチェック
-            List<List<object>> sheet = _restoreSheets["todo_task"];
-
-            // シートにデータが存在すること
-            if (sheet.Count == 0)
             {
-                ret.Add(CheckRestoreSheetsResult.SHEET_TODO_TASK_ROW_NOT_FOUND);
-            }
-            else
-            {
-                List<string> restoreColumnNames = new List<string>();
-                foreach (var firstColumn in sheet[0]) restoreColumnNames.Add(firstColumn.ToString());
+                DataTable sheet = _restoreSheets.Tables["todo_task"];
 
-                // シートの列の過不足をチェック
-                if (UtilLib.IsMatched(properColumnNamesOfTodoTask, restoreColumnNames) == false)
+                // シートにデータが存在すること
+                if (sheet.Rows.Count == 0)
                 {
-                    ret.Add(CheckRestoreSheetsResult.SHEET_TODO_TASK_COLUMN_INVALID);
+                    ret.Add(CheckRestoreSheetsResult.SHEET_TODO_TASK_ROW_NOT_FOUND);
+                }
+                else
+                {
+                    List<string> restoreColumnNames = new List<string>();
+                    for (int colIndex = 0; colIndex < sheet.Columns.Count; colIndex++) restoreColumnNames.Add(sheet.Rows[0][colIndex].ToString());
+
+                    // シートの列の過不足をチェック
+                    if (UtilLib.IsMatched(properColumnNamesOfTodoTask, restoreColumnNames) == false)
+                    {
+                        ret.Add(CheckRestoreSheetsResult.SHEET_TODO_TASK_COLUMN_INVALID);
+                    }
                 }
             }
 
