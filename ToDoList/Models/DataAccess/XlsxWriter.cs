@@ -17,7 +17,7 @@ namespace ToDoList.Models.DataAccess
         public static void FileViewExport(string _fileName, List<TodoTask> _tasks)
         {
             var book = new XLWorkbook();
-            var sheet = book.Worksheets.Add("ToDoListMetro_Export");
+            var sheet = book.Worksheets.Add("ToDoListMetro");
 
             int rowNum = 1;
             const int COL_NUM_DUE_DATE = 1;
@@ -40,6 +40,7 @@ namespace ToDoList.Models.DataAccess
                 rowNum++;
             }
 
+            book.Protect();
             book.SaveAs(_fileName);
         }
 
@@ -77,8 +78,11 @@ namespace ToDoList.Models.DataAccess
 
                     rowNum++;
                 }
+
+                sheet.Protect();
             }
 
+            book.Protect();
             book.SaveAs(_fileName);
         }
     }

@@ -66,11 +66,12 @@ namespace ToDoList.Models.Validators
                 if (UtilLib.IsMatched(properSheetNames, restoreSheetNames) == false)
                 {
                     ret.Add(CheckRestoreSheetsResult.SHEET_NAMES_INVALID);
-                    return ret;
                 }
             }
 
-            // 復旧用データ todo_task のチェック
+            if (ret.Count != 0) return ret; // これまでの検証でNG個所があれば、ここで処理を終了する
+
+            // 復旧用データ todo_task のフォーマットチェック
             {
                 DataTable sheet = _restoreSheets.Tables["todo_task"];
 
@@ -82,7 +83,7 @@ namespace ToDoList.Models.Validators
                 else
                 {
                     List<string> restoreColumnNames = new List<string>();
-                    for (int colIndex = 0; colIndex < sheet.Columns.Count; colIndex++) restoreColumnNames.Add(sheet.Rows[0][colIndex].ToString());
+                    for (int colIndex = 0; colIndex < sheet.Columns.Count; colIndex++) restoreColumnNames.Add(Convert.ToString(sheet.Rows[0][colIndex]));
 
                     // シートの列の過不足をチェック
                     if (UtilLib.IsMatched(properColumnNamesOfTodoTask, restoreColumnNames) == false)

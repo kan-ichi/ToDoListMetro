@@ -65,7 +65,7 @@ namespace ToDoList.ViewModels
             string exportPathAndFileName = this.ExportPathAndFileName.Value;
             XlsxWriter.FileViewExport(exportPathAndFileName, tasks);
 
-            this.MainWindow.ShowMessageAsync("ファイルのエクスポート", Path.GetFileName(exportPathAndFileName) + " にデータを出力しました。");
+            this.MainWindow.ShowMessageAsync("データのエクスポート", Path.GetFileName(exportPathAndFileName) + " にデータを出力しました。");
             this.ExportPathAndFileName.Value = string.Empty;
         }
 
@@ -93,7 +93,7 @@ namespace ToDoList.ViewModels
             string backupPathAndFileName = this.BackupPathAndFileName.Value;
             XlsxWriter.FileViewBackup(backupPathAndFileName, backupTables);
 
-            this.MainWindow.ShowMessageAsync("ファイルのバックアップ", Path.GetFileName(backupPathAndFileName) + " にデータを出力しました。");
+            this.MainWindow.ShowMessageAsync("データのバックアップ", Path.GetFileName(backupPathAndFileName) + " にデータを出力しました。");
             this.BackupPathAndFileName.Value = string.Empty;
         }
 
@@ -125,8 +125,8 @@ namespace ToDoList.ViewModels
                 return;
             }
 
-            DataTable restoreTableTodoTask = UtilLib.ConvertTableFirstRowAsColumnName(restoreSheets.Tables["todo_task"]);
-            this.RestoreTableTodoTask(restoreTableTodoTask);
+            DataTable todoTaskRestoreTable = UtilLib.ConvertTableFirstRowAsColumnName(restoreSheets.Tables["todo_task"]);
+            this.RestoreTableTodoTask(todoTaskRestoreTable);
 
             await this.MainWindow.ShowMessageAsync("データ復旧処理が完了しました", "バックアップファイル " + Path.GetFileName(restorePathAndFileName) + " からデータを復旧しました。");
             this.RestorePathAndFileName.Value = string.Empty;
