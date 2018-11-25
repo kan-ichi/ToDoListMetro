@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ToDoList.Models.BusinessLogic;
 using ToDoList.Models.Codes;
 using ToDoList.Models.DataAccess;
 using ToDoList.Models.Entities;
@@ -141,8 +142,10 @@ namespace ToDoList.ViewModels
             var diagResult = await this.MainWindow.ShowMessageAsync("データ復旧の確認", "現在のデータを全て消去し、バックアップファイル " + Path.GetFileName(restorePathAndFileName) + " で上書きしますがよろしいですか？", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
             if (diagResult != MessageDialogResult.Affirmative) return;
 
+            // 復旧用データを取得
             DataSet restoreSheets = XlsxReader.GetXLSheets(restorePathAndFileName);
 
+            // 復旧用データを検証
             var checkRestoreSheetsResult = FileViewRestoreValidator.CheckRestoreSheets(restoreSheets);
             if(checkRestoreSheetsResult.Count > 0)
             {
@@ -150,8 +153,9 @@ namespace ToDoList.ViewModels
                 return;
             }
 
-            DataTable todoTaskRestoreTable = UtilLib.ConvertTableFirstRowAsColumnName(restoreSheets.Tables["todo_task"]);
-            this.RestoreTableTodoTask(todoTaskRestoreTable);
+            // 各テーブルのリストア処理
+            FileViewRestoreLogic restoreLogic = new FileViewRestoreLogic(_dbAccessor_);
+            restoreLogic.RestoreTables(restoreSheets);
 
             await this.MainWindow.ShowMessageAsync("データ復旧処理が完了しました", "バックアップファイル " + Path.GetFileName(restorePathAndFileName) + " からデータを復旧しました。");
             this.RestorePathAndFileName.Value = string.Empty;
@@ -160,47 +164,6 @@ namespace ToDoList.ViewModels
         #endregion
 
         #region 各種メソッド
-
-        /// <summary>
-        /// タスクテーブルのリストアを行います（現在のデータは復旧用データに全て置き換わります）
-        /// </summary>
-        private void RestoreTableTodoTask(DataTable _restoreTable)
-        {
-            DateTime currentDateTime = DateTime.Now;
-            string tempTableName = @"todo_task_temp_" + currentDateTime.ToString("yyyyMMddHHmmssfff");
-
-            // 一時テーブルを作成
-            {
-                string createTableQuery = _dbAccessor_.GenerateCreateTableQueryTodoTask(tempTableName);
-                _dbAccessor_.CreateTable(createTableQuery);
-            }
-
-            // 一時テーブルにレコードを登録
-            foreach (DataRow row in _restoreTable.Rows)
-            {
-                TodoTask record = new TodoTask()
-
-                #region レコード各項目の値を設定
-                {
-                    ID = Convert.ToString(row["id"]),
-                    CreatedAt = Convert.ToDateTime(row["created_at"]),
-                    UpdatedAt = Convert.ToDateTime(row["updated_at"])
-                };
-                record.Subject = Convert.ToString(row["subject"]);
-                {
-                    DateTime d;
-                    if (DateTime.TryParse(Convert.ToString(row["due_date"]), out d)) record.DueDate = d;
-                }
-                record.StatusCode = new StatusCode(Convert.ToString(row["status_code"]));
-                #endregion
-
-                _dbAccessor_.TodoTaskInsert(record, tempTableName);
-            }
-
-            // 一時テーブルをリネームし、タスクテーブルとする
-            _dbAccessor_.RenameTempTableToTodoTask(tempTableName);
-        }
-
 
         /// <summary>
         /// ビューにバインドされている項目を初期化します
