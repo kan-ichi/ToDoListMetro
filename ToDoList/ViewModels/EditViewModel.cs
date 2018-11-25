@@ -201,11 +201,11 @@ namespace ToDoList.ViewModels
 
             if (this.Status.Value)
             {
-                _task.StatusCode = new StatusCode(StatusCode.FINISHED);
+                _task.StatusCode = new StatusCode(StatusCode.CODE_FINISHED);
             }
             else
             {
-                _task.StatusCode = new StatusCode(StatusCode.NOT_YET);
+                _task.StatusCode = new StatusCode(StatusCode.CODE_NOT_YET);
             }
 
             _task.Subject = this.Subject.Value;

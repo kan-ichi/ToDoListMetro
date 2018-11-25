@@ -72,10 +72,35 @@ namespace ToDoList.ViewModels
         /// <summary>
         /// ボタン〔インポート〕押下処理
         /// </summary>
-        private void ImportCommandExecute()
+        private async void ImportCommandExecute()
         {
+            string importPathAndFileName = this.ImportPathAndFileName.Value;
+
+            var metroDialogSettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "はい",
+                NegativeButtonText = "いいえ",
+                AnimateHide = true,
+                AnimateShow = true,
+                ColorScheme = MetroDialogColorScheme.Theme,
+            };
+
+            var diagResult = await this.MainWindow.ShowMessageAsync("データのインポート", "ファイル " + Path.GetFileName(importPathAndFileName) + " のインポート処理を行います。よろしいですか？", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
+            if (diagResult != MessageDialogResult.Affirmative) return;
+
+            DataSet importSheets = XlsxReader.GetXLSheets(importPathAndFileName);
+
+            var checkImportSheetsResult = FileViewImportValidator.CheckImportSheets(importSheets);
+            if (checkImportSheetsResult.Count > 0)
+            {
+                await this.MainWindow.ShowMessageAsync("データのインポートを中止しました", "ファイルの形式が正しくありません。");
+                return;
+            }
+
             // under construction
-             string importPathAndFileName = this.ImportPathAndFileName.Value;
+
+            await this.MainWindow.ShowMessageAsync("データのインポートが完了しました", "ファイル " + Path.GetFileName(importPathAndFileName) + " からデータをインポートしました。");
+            this.ImportPathAndFileName.Value = string.Empty;
         }
 
         /// <summary>

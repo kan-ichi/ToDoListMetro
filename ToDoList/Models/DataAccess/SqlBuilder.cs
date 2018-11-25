@@ -77,7 +77,7 @@ namespace ToDoList.Models.DataAccess
                 if (_cond.ExportStatusExceptFinished)
                 {
                     sb.Append(@" AND status_code <> @status_code ");
-                    this.Parameters.Add(new SQLiteParameter(@"@status_code", StatusCode.FINISHED));
+                    this.Parameters.Add(new SQLiteParameter(@"@status_code", StatusCode.CODE_FINISHED));
                 }
                 if (_cond.ExportDueDateFrom.HasValue)
                 {

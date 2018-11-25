@@ -60,5 +60,17 @@ namespace ToDoList.Models.Utilities
             }
             return !(unMatched);
         }
+
+        /// <summary>
+        /// 第一引数リストに第二引数リストが全て含まれているかを判定します
+        /// </summary>
+        public static bool IsFirstContainsAllOfSecond(List<string> _firstList, List<string> _secondList)
+        {
+            foreach (var second in _secondList)
+            {
+                if (_firstList.Contains(second) == false) return false;
+            }
+            return true;
+        }
     }
 }

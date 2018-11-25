@@ -71,7 +71,7 @@ namespace ToDoList.ViewModels
             TodoTask clickedTask = null;
             foreach (var task in this.DataGridItemsSource) if (task.IsSelected) clickedTask = task;
 
-            clickedTask.StatusCode = new StatusCode(StatusCode.FINISHED);
+            clickedTask.StatusCode = new StatusCode(StatusCode.CODE_FINISHED);
             _dbAccessor_.TodoTaskUpdate(clickedTask);
             this.SearchExecute();
         }
@@ -86,7 +86,7 @@ namespace ToDoList.ViewModels
         private void SearchExecute()
         {
             SqlBuilder.MainViewSearchConditions sc = new SqlBuilder.MainViewSearchConditions();
-            sc.StatusCodeNotEqual = StatusCode.FINISHED;
+            sc.StatusCodeNotEqual = StatusCode.CODE_FINISHED;
 
             SqlBuilder sql = new SqlBuilder(sc);
             List<TodoTask> tasks = _dbAccessor_.TodoTaskSelect(sql);
@@ -113,13 +113,13 @@ namespace ToDoList.ViewModels
         {
             _dbAccessor_.CreateDataBase();
             List<TodoTask> tasks = new List<TodoTask>();
-            tasks.Add(new TodoTask() { Subject = "get up early", DueDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "make breakfast", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(4).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "take my dog for a walk", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(8).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "make lunch", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(12).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.FINISHED) });
-            tasks.Add(new TodoTask() { Subject = "pick up my child from a nursery school", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(16).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "cook dinner", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(20).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.NOT_YET) });
-            tasks.Add(new TodoTask() { Subject = "sleep early", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(24).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "get up early", DueDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.CODE_NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "make breakfast", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(4).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.CODE_NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "take my dog for a walk", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(8).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.CODE_NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "make lunch", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(12).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.CODE_FINISHED) });
+            tasks.Add(new TodoTask() { Subject = "pick up my child from a nursery school", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(16).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.CODE_NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "cook dinner", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(20).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.CODE_NOT_YET) });
+            tasks.Add(new TodoTask() { Subject = "sleep early", DueDate = Convert.ToDateTime(DateTime.Now.AddHours(24).ToString("yyyy-MM-dd HH:mm")), StatusCode = new StatusCode(StatusCode.CODE_NOT_YET) });
             foreach (var task in tasks) _dbAccessor_.TodoTaskInsert(task);
         }
 
