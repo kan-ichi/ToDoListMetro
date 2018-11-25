@@ -83,11 +83,11 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void BackupCommandExecute()
         {
-            Dictionary<string, List<List<object>>> backupTables = new Dictionary<string, List<List<object>>>();
+            DataSet backupTables = new DataSet();
             foreach(var tableName in _dbAccessor_.GetTableNameList())
             {
-                List<List<object>> recordList = _dbAccessor_.SelectAllWithHeader(tableName);
-                backupTables.Add(tableName, recordList);
+                DataTable recordList = _dbAccessor_.SelectAll(tableName);
+                backupTables.Tables.Add(recordList);
             }
 
             string backupPathAndFileName = this.BackupPathAndFileName.Value;
@@ -157,16 +157,16 @@ namespace ToDoList.ViewModels
 
                 #region レコード各項目の値を設定
                 {
-                    ID = row["id"].ToString(),
+                    ID = Convert.ToString(row["id"]),
                     CreatedAt = Convert.ToDateTime(row["created_at"]),
                     UpdatedAt = Convert.ToDateTime(row["updated_at"])
                 };
-                record.Subject = row["subject"].ToString();
+                record.Subject = Convert.ToString(row["subject"]);
                 {
                     DateTime d;
-                    if (DateTime.TryParse(row["due_date"].ToString(), out d)) record.DueDate = d;
+                    if (DateTime.TryParse(Convert.ToString(row["due_date"]), out d)) record.DueDate = d;
                 }
-                record.StatusCode = new StatusCode(row["status_code"].ToString());
+                record.StatusCode = new StatusCode(Convert.ToString(row["status_code"]));
                 #endregion
 
                 _dbAccessor_.TodoTaskInsert(record, tempTableName);

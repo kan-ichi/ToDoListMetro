@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,23 +46,32 @@ namespace ToDoList.Models.DataAccess
         /// <summary>
         /// FileView ボタン〔バックアップ〕のデータ出力を行います
         /// </summary>
-        public static void FileViewBackup(string _fileName, Dictionary<string, List<List<object>>> _tables)
+        public static void FileViewBackup(string _fileName, DataSet _tables)
         {
             var book = new XLWorkbook();
 
-            foreach (var table in _tables)
+            foreach (DataTable table in _tables.Tables)
             {
-                var sheet = book.Worksheets.Add(table.Key);
+                var sheet = book.Worksheets.Add(table.TableName);
                 int rowNum = 1;
 
-                List<List<object>> records = table.Value;
-                foreach (List<object> record in records)
                 {
                     int colNum = 1;
-
-                    foreach (var column in record)
+                    foreach (DataColumn column in table.Columns)
                     {
-                        sheet.Cell(rowNum, colNum).SetValue<string>(column.ToString());
+                        sheet.Cell(rowNum, colNum).SetValue<string>(column.ColumnName);
+                        colNum++;
+                    }
+
+                    rowNum++;
+                }
+
+                foreach (DataRow record in table.Rows)
+                {
+                    int colNum = 1;
+                    foreach (DataColumn column in table.Columns)
+                    {
+                        sheet.Cell(rowNum, colNum).SetValue<string>(Convert.ToString(record[column.ColumnName]));
                         colNum++;
                     }
 

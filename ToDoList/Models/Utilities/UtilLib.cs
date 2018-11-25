@@ -21,7 +21,7 @@ namespace ToDoList.Models.Utilities
             {
                 for (int colIndex = 0; colIndex < _inputTable.Columns.Count; colIndex++)
                 {
-                    columnNames.Add(_inputTable.Rows[0][colIndex].ToString());
+                    columnNames.Add(Convert.ToString(_inputTable.Rows[0][colIndex]));
                 }
             }
 

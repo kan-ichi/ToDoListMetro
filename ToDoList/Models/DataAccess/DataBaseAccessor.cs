@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
@@ -125,7 +126,7 @@ namespace ToDoList.Models.DataAccess
                 {
                     while (reader.Read() == true)
                     {
-                        ret.Add(reader["name"].ToString());
+                        ret.Add(Convert.ToString(reader["name"]));
                     }
                 }
             }
@@ -133,37 +134,30 @@ namespace ToDoList.Models.DataAccess
         }
 
         /// <summary>
-        /// テーブル内の全てのレコードを取得します（一行目にカラム名を付与して取得）
+        /// テーブル内の全てのレコードを取得します
         /// </summary>
-        public List<List<object>> SelectAllWithHeader(string _tableName)
+        public DataTable SelectAll(string _tableName)
         {
-            return this.SelectAll(_tableName, true);
-        }
+            DataTable retTable = new DataTable(_tableName);
+            List<string> columnNames = new List<string>();
 
-        /// <summary>
-        /// テーブル内の全てのレコードを取得します（引数で「ヘッダ有」を指定した場合、一行目にカラム名を付与して取得）
-        /// </summary>
-        private List<List<object>> SelectAll(string _tableName, bool _withHeader = false)
-        {
-            List<List<object>> recordList = new List<List<object>>();
-
-            if (_withHeader)
+            using (var connection = new SQLiteConnection(_connectionString_))
+            using (var command = connection.CreateCommand())
             {
-                using (var connection = new SQLiteConnection(_connectionString_))
-                using (var command = connection.CreateCommand())
+                connection.Open();
+                command.CommandText = @"PRAGMA TABLE_INFO(" + _tableName + ")";
+                using (var reader = command.ExecuteReader())
                 {
-                    connection.Open();
-                    command.CommandText = @"PRAGMA TABLE_INFO(" + _tableName + ")";
-                    using (var reader = command.ExecuteReader())
+                    while (reader.Read() == true)
                     {
-                        List<object> columnArray = new List<object>();
-                        while (reader.Read() == true)
-                        {
-                            columnArray.Add(reader["name"].ToString());
-                        }
-                        recordList.Add(columnArray);
+                        columnNames.Add(Convert.ToString(reader["name"]));
                     }
                 }
+            }
+
+            foreach(string columnName in columnNames)
+            {
+                retTable.Columns.Add(columnName);
             }
 
             using (var connection = new SQLiteConnection(_connectionString_))
@@ -175,17 +169,17 @@ namespace ToDoList.Models.DataAccess
                 {
                     while (reader.Read() == true)
                     {
-                        List<object> columnArray = new List<object>();
-                        for (int i = 0; i < reader.FieldCount; i++)
+                        DataRow dr = retTable.NewRow();
+                        foreach (string columnName in columnNames)
                         {
-                            columnArray.Add(reader.GetValue(i));
+                            dr[columnName] = reader[columnName];
                         }
-                        recordList.Add(columnArray);
+                        retTable.Rows.Add(dr);
                     }
                 }
             }
 
-            return recordList;
+            return retTable;
         }
 
         /// <summary>
@@ -208,16 +202,16 @@ namespace ToDoList.Models.DataAccess
                     {
                         TodoTask record = new TodoTask()
                         {
-                            ID = reader["id"].ToString(),
+                            ID = Convert.ToString(reader["id"]),
                             CreatedAt = Convert.ToDateTime(reader["created_at"]),
                             UpdatedAt = Convert.ToDateTime(reader["updated_at"])
                         };
-                        record.Subject = reader["subject"].ToString();
+                        record.Subject = Convert.ToString(reader["subject"]);
                         {
                             DateTime d;
-                            if (DateTime.TryParse(reader["due_date"].ToString(), out d)) record.DueDate = d;
+                            if (DateTime.TryParse(Convert.ToString(reader["due_date"]), out d)) record.DueDate = d;
                         }
-                        record.StatusCode = new StatusCode(reader["status_code"].ToString());
+                        record.StatusCode = new StatusCode(Convert.ToString(reader["status_code"]));
 
                         records.Add(record);
                     }
