@@ -28,6 +28,13 @@ namespace ToDoList.Models.Codes
 
         public static bool HasName(string _name) { return NameCodePair.ContainsKey(_name); }
 
+        public static string GetCodeByName(string _name)
+        {
+            string ret = null;
+            NameCodePair.TryGetValue(_name, out ret);
+            return ret;
+        }
+
         public string Code { get; set; }
         public string Name { get { if (CodeNamePair.Keys.Contains(Code)) return CodeNamePair[Code]; else return string.Empty; } }
 

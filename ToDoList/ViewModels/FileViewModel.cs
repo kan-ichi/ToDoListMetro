@@ -89,8 +89,10 @@ namespace ToDoList.ViewModels
             var diagResult = await this.MainWindow.ShowMessageAsync("データのインポート", "ファイル " + Path.GetFileName(importPathAndFileName) + " のインポート処理を行います。よろしいですか？", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
             if (diagResult != MessageDialogResult.Affirmative) return;
 
+            // インポートデータを取得
             DataSet importSheets = XlsxReader.GetXLSheets(importPathAndFileName);
 
+            // インポートデータを検証
             var checkImportSheetsResult = FileViewImportValidator.CheckImportSheets(importSheets);
             if (checkImportSheetsResult.Count > 0)
             {
@@ -98,7 +100,9 @@ namespace ToDoList.ViewModels
                 return;
             }
 
-            // under construction
+            // タスクテーブルインポート処理
+            FileViewImportLogic importLogic = new FileViewImportLogic(_dbAccessor_);
+            importLogic.ImportTodoTask(importSheets);
 
             await this.MainWindow.ShowMessageAsync("データのインポートが完了しました", "ファイル " + Path.GetFileName(importPathAndFileName) + " からデータをインポートしました。");
             this.ImportPathAndFileName.Value = string.Empty;

@@ -255,6 +255,41 @@ namespace ToDoList.Models.DataAccess
         }
 
         /// <summary>
+        /// タスクテーブルにレコードを追加します（［内容］の同じレコードが既に存在する場合、追加も上書きもしません）
+        /// </summary>
+        public void TodoTaskInsertWithSkipSameSubject(TodoTask _record, string alias = "todo_task")
+        {
+            var id = this.GenerateId();
+            var now = DateTime.Now;
+
+            _record.CreatedAt = now;
+            _record.UpdatedAt = now;
+
+            using (var connection = new SQLiteConnection(_connectionString_))
+            using (var command = connection.CreateCommand())
+            {
+                connection.Open();
+
+                command.CommandText = @"INSERT INTO " + alias + @" " +
+                    @"( id,  created_at,  updated_at,  subject,  due_date,  status_code) SELECT " +
+                    @"@id, @created_at, @updated_at, @subject, @due_date, @status_code " +
+                    @"WHERE NOT EXISTS (SELECT 1 FROM " + alias + @" WHERE subject = @subject)";
+
+                command.Parameters.Add(new SQLiteParameter("@id", id));
+                command.Parameters.Add(new SQLiteParameter("@created_at", _record.CreatedAt));
+                command.Parameters.Add(new SQLiteParameter("@updated_at", _record.UpdatedAt));
+                command.Parameters.Add(new SQLiteParameter("@subject", _record.Subject));
+                command.Parameters.Add(new SQLiteParameter("@due_date", _record.DueDate));
+                command.Parameters.Add(new SQLiteParameter("@status_code", _record.StatusCode.Code));
+
+                command.Prepare(); //パラメータをセット
+                command.ExecuteNonQuery();
+            }
+
+            _record.ID = id;
+        }
+
+        /// <summary>
         /// タスクテーブルの指定レコードを更新します
         /// </summary>
         public void TodoTaskUpdate(TodoTask _record)
