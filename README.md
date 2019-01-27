@@ -1,6 +1,6 @@
 # ToDoListMetro
 Windows PC stand-alone で動作する ToDoList のサンプルアプリケーションです。  
-MVVMパターンの学習用として作成しています。(under development)
+MVVMパターンの学習用として作成しています。
 
 # Dependency
 Prism.Wpf ReactiveProperty MahApps.Metro SQLite ClosedXML を使用しています。
@@ -25,3 +25,6 @@ System.Data.SQLite
   
 ClosedXML  
 <https://github.com/ClosedXML/ClosedXML>
+
+Prism.InteractivityExtension  
+<https://github.com/Kuro4/Prism.InteractivityExtension>
