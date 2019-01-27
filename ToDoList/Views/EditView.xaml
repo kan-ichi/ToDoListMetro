@@ -38,7 +38,7 @@
             <RowDefinition Height="2" />
             <RowDefinition Height="26" />
             <RowDefinition Height="2" />
-            <RowDefinition Height="26" />
+            <RowDefinition Height="52" />
             <RowDefinition Height="2" />
         </Grid.RowDefinitions>
 
@@ -80,7 +80,7 @@
         <Button Content="新規" Command="{Binding RegisterCommand}" Grid.Row="5" Grid.Column="11"/>
         <Button Content="削除" Command="{Binding DeleteCommand}" Grid.Row="5" Grid.Column="12"/>
         <Label Content="内容" Grid.Row="7" Grid.Column="1"/>
-        <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" Grid.Row="7" Grid.Column="2" TextWrapping="Wrap" Grid.ColumnSpan="11"/>
+        <TextBox x:Name="Description" Text="{Binding Subject.Value, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="11"/>
 
     </Grid>
 </UserControl>

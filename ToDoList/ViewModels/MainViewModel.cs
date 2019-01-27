@@ -1,4 +1,6 @@
-﻿using Prism.Regions;
+﻿using Prism.Interactivity.InteractionRequest;
+using Prism.InteractivityExtension;
+using Prism.Regions;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,9 @@ namespace ToDoList.ViewModels
     {
         #region view binding items
 
+        public InteractionRequest<InputValueNotification> PopupEditViewRequestTrigger { get; private set; }
         public ReactiveCommand FinishButtonCommand { get; private set; }
+        public ReactiveCommand EditButtonCommand { get; private set; }
         public ReactiveCollection<TodoTask> DataGridItemsSource { get; private set; }
 
         #endregion
@@ -73,6 +77,36 @@ namespace ToDoList.ViewModels
 
             clickedTask.StatusCode = new StatusCode(StatusCode.CODE_FINISHED);
             _dbAccessor_.TodoTaskUpdate(clickedTask);
+
+            this.SearchExecute();
+        }
+
+        /// <summary>
+        /// ボタン〔編集〕押下処理
+        /// </summary>
+        private void EditButtonCommandExecute()
+        {
+            TodoTask clickedTask = null;
+            foreach (var task in this.DataGridItemsSource) if (task.IsSelected) clickedTask = task;
+
+            var inputValueNotification = new InputValueNotification();
+            inputValueNotification.RequestValue = clickedTask;
+            this.PopupEditViewRequestTrigger.Raise(inputValueNotification);
+
+            object returnValue = inputValueNotification.ReturnValue;
+            if (returnValue is TodoTask)
+            {
+                TodoTask editedTask = (TodoTask)returnValue;
+                if (string.IsNullOrEmpty(editedTask.ID))
+                {
+                    _dbAccessor_.TodoTaskInsert(editedTask);
+                }
+                else
+                {
+                    _dbAccessor_.TodoTaskUpdate(editedTask);
+                }
+            }
+
             this.SearchExecute();
         }
 
@@ -102,8 +136,11 @@ namespace ToDoList.ViewModels
         {
             this.DataGridItemsSource = new ReactiveCollection<TodoTask>();
 
+            this.PopupEditViewRequestTrigger = new InteractionRequest<InputValueNotification>();
             this.FinishButtonCommand = new ReactiveCommand();
+            this.EditButtonCommand = new ReactiveCommand();
             this.FinishButtonCommand.Subscribe(x => FinishButtonCommandExecute());
+            this.EditButtonCommand.Subscribe(x => EditButtonCommandExecute());
         }
 
         /// <summary>

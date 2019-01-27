@@ -9,8 +9,19 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:ToDoList.Views"
+             xmlns:vm="clr-namespace:ToDoList.ViewModels"
              mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type vm:MainViewModel}, IsDesignTimeCreatable=True}" 
              d:DesignWidth="800" d:DesignHeight="500">
+
+    <i:Interaction.Triggers>
+        <prism:InteractionRequestTrigger SourceObject="{Binding PopupEditViewRequestTrigger}">
+            <local:MainViewPopupEditViewAction
+                WindowStartupLocation="Manual"
+                IsModal="True"/>
+        </prism:InteractionRequestTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -28,6 +39,14 @@
                         <DataTemplate>
                             <Button Content="Finish!" Controls:ControlsHelper.ContentCharacterCasing="Normal"
                                     Command="{Binding Path=DataContext.FinishButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="編集" Controls:ControlsHelper.ContentCharacterCasing="Normal"
+                                    Command="{Binding Path=DataContext.EditButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

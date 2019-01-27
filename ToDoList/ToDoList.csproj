@@ -175,7 +175,9 @@
     <Compile Include="Models\Validators\FileViewRestoreValidator.cs" />
     <Compile Include="ViewModels\EditViewModel.cs" />
     <Compile Include="ViewModels\FileViewModel.cs" />
+    <Compile Include="ViewModels\InputValueNotification.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\PopupEditViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\EditView.xaml.cs">
       <DependentUpon>EditView.xaml</DependentUpon>
@@ -185,6 +187,10 @@
     </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainViewPopupEditViewAction.cs" />
+    <Compile Include="Views\PopupEditView.xaml.cs">
+      <DependentUpon>PopupEditView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
@@ -228,7 +234,12 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Prism.InteractivityExtension\Prism.InteractivityExtension.csproj">
+      <Project>{97ea63f8-3294-47e8-808f-8c3885d74a32}</Project>
+      <Name>Prism.InteractivityExtension</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Page Include="Views\EditView.xaml">
       <SubType>Designer</SubType>
@@ -241,6 +252,10 @@
     <Page Include="Views\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PopupEditView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Shell.xaml">
       <SubType>Designer</SubType>

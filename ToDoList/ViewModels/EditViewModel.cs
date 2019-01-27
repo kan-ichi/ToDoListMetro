@@ -119,6 +119,7 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void UpdateCommandExecute()
         {
+            if (_editingTodoTask_ == null) return;
             this.CollectEditControls(ref _editingTodoTask_);
             _dbAccessor_.TodoTaskUpdate(_editingTodoTask_);
             this.SearchCommandExecute();
@@ -140,6 +141,7 @@ namespace ToDoList.ViewModels
         /// </summary>
         private void DeleteCommandExecute()
         {
+            if (_editingTodoTask_ == null) return;
             _dbAccessor_.TodoTaskDelete(_editingTodoTask_);
             this.SearchCommandExecute();
             _editingTodoTask_ = null;
