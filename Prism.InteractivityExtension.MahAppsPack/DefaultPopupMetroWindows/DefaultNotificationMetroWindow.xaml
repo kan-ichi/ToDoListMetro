@@ -1,0 +1,41 @@
+﻿<controls:MetroWindow x:Class="Prism.InteractivityExtension.MahAppsPack.DefaultPopupMetroWindows.DefaultNotificationMetroWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      MinWidth="300"
+                      MinHeight="150" 
+                      Title="{Binding Title}" 
+                      TitleCharacterCasing="Normal">
+    <controls:MetroWindow.Style>
+        <Style TargetType="{x:Type controls:MetroWindow}" >
+            <Setter Property="SizeToContent" Value="WidthAndHeight" />
+        </Style>
+    </controls:MetroWindow.Style>
+    <controls:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Prism.InteractivityExtension.MahAppsPack;component/MetroWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </controls:MetroWindow.Resources>
+    <Grid x:Name="LayoutRoot" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ContentControl
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Grid.Row="0"
+            Content="{Binding Content}"/>
+        <Button x:Name="OKButton"
+                Content="OK"
+                Width="75"
+                Height="25"
+                HorizontalAlignment="Right"
+                Margin="0,10,0,0"
+                Grid.Row="1"
+                Click="OKButton_Click"
+                IsDefault="True" />
+    </Grid>
+</controls:MetroWindow>
