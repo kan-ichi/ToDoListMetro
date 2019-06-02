@@ -2,16 +2,19 @@
 # この .gitignore ファイルは Microsoft(R) Visual Studio によって自動的に作成されました。
 ################################################################################
 
-/.vs/ToDoListMetro/v14
+*.suo
 /bin/Debug
-/obj/Debug/App.g.i.cs
 /obj/Debug
-/ToDoList/bin/Debug
-/ToDoList/obj/Debug
-/ToDoList/Properties
 /packages
-/Prism.InteractivityExtension/bin/Debug
-/Prism.InteractivityExtension/obj/Debug
-/Prism.InteractivityExtension/Properties
+/Installer/Debug
 /Prism.InteractivityExtension.MahAppsPack/obj/Debug
-/Prism.InteractivityExtension.MahAppsPack/Properties
+/Prism.InteractivityExtension.MahAppsPack/obj/Release
+/Prism.InteractivityExtension/bin/Debug
+/Prism.InteractivityExtension/bin/Release
+/Prism.InteractivityExtension/obj/Debug
+/Prism.InteractivityExtension/obj/Release
+/ToDoList/bin/Debug
+/ToDoList/bin/Release
+/ToDoList/obj/Debug
+/ToDoList/obj/Release
+/ToDoListMetroInstaller.sln
